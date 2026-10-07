@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "species_id": "taenia_spp",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Which egg feature supports Taenia recognition?",
+      "options": [
+        "Radial striations",
+        "Polar plugs",
+        "Opercular shoulders"
+      ],
+      "correct_answer": 0,
+      "explanation": "The embryophore is radially striated."
+    },
+    {
+      "id": "q2",
+      "question": "What exposure can cause cysticercosis?",
+      "options": [
+        "Beef cysticerci",
+        "T. solium eggs",
+        "Fish metacercariae"
+      ],
+      "correct_answer": 1,
+      "explanation": "T. solium egg ingestion may produce tissue infection."
+    },
+    {
+      "id": "q3",
+      "question": "Can eggs distinguish T. saginata from T. solium?",
+      "options": [
+        "No",
+        "Yes"
+      ],
+      "correct_answer": 0,
+      "explanation": "Taenia eggs are morphologically indistinguishable."
+    }
+  ]
+}

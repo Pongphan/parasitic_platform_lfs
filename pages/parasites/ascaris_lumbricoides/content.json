@@ -1,0 +1,101 @@
+{
+  "id": "ascaris_lumbricoides",
+  "name": "Ascaris lumbricoides",
+  "common_name": "Large intestinal roundworm",
+  "group": "Nematodes",
+  "taxonomy": {
+    "lineage": "Nematoda > Chromadorea > Ascarididae",
+    "genus": "Ascaris",
+    "scientific_name": "Ascaris lumbricoides",
+    "species_epithet": "lumbricoides",
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Fertilized egg: about 45–75 µm long, thick-shelled and often brown with a mammillated coat. Decorticated eggs lack this outer texture.",
+    "Unfertilized eggs are more elongated, sometimes up to 90 µm long, with a thinner shell and disorganized granules. Adults are large cylindrical worms."
+  ],
+  "transmission": {
+    "types": [
+      "Fecal-oral"
+    ],
+    "detail": "Eggs embryonate in soil; ingested infective eggs release larvae that migrate through liver and lungs before returning to the intestine to mature."
+  },
+  "life_cycle": [
+    {
+      "stage": "Eggs in soil",
+      "detail": "Eggs pass in stool; fertile eggs develop in suitable soil."
+    },
+    {
+      "stage": "Ingestion",
+      "detail": "A host swallows embryonated eggs."
+    },
+    {
+      "stage": "Lung migration",
+      "detail": "Larvae hatch, migrate to the lungs, ascend airways, and are swallowed."
+    },
+    {
+      "stage": "Intestinal adults",
+      "detail": "Adults mature in the small intestine and females produce eggs."
+    }
+  ],
+  "hosts": "Definitive: humans; closely related pig Ascaris can complicate species attribution. No intermediate host.",
+  "distribution": "Worldwide, especially warm regions with inadequate sanitation, including Southeast Asia.",
+  "clinical_significance": "Heavy worm burdens can impair nutrition or obstruct the intestine; migrating worms may enter biliary ducts and larval migration can cause pulmonary symptoms.",
+  "clinical_tags": [
+    "Intestinal disease",
+    "Hepatobiliary disease",
+    "Pulmonary disease"
+  ],
+  "specimen": "Fertilized or unfertilized eggs in stool; adult worms may be passed.",
+  "diagnostics": [
+    "Stool wet mount/concentration at 100–400×; record fertilization and coat state separately."
+  ],
+  "differential_diagnosis": [
+    "Decorticated eggs can resemble other smooth eggs. Pig-associated Ascaris cannot be confidently separated by routine egg morphology."
+  ],
+  "aliases": [],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "species",
+  "description": "Ascaris lumbricoides — Large intestinal roundworm. Heavy worm burdens can impair nutrition or obstruct the intestine; migrating worms may enter biliary ducts and larval migration can cause pulmonary symptoms.",
+  "images": [
+    {
+      "file": "morphology.svg",
+      "caption": "Original schematic of a cyst or egg · not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0"
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/ascariasis/index.html"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/ascariasis/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "ascaris lumbricoides",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": null,
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

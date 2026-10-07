@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "labels": [
+    "artifact",
+    "Opisthorchis viverrini egg",
+    "Minute intestinal fluke egg"
+  ],
+  "preprocessing": "raw_0_255",
+  "output": "sigmoid_scores",
+  "provenance": "Class order and raw pixel preprocessing inherited from parasitic_platform_2026/pages/03_Parasitic_Vision.py; output activation inspected in saved model. Training provenance and external validation were not supplied."
+}

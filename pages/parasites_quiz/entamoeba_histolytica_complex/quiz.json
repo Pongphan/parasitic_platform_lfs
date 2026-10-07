@@ -1,0 +1,23 @@
+{
+  "species_id": "entamoeba_histolytica_complex",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Entamoeba histolytica complex?",
+      "options": [
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen.",
+        "Microfilariae in a peripheral blood film.",
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Cysts or trophozoites in stool; tissue or aspirate findings belong to a distinct specimen category."
+      ],
+      "correct_answer": 3,
+      "explanation": "Cysts or trophozoites in stool; tissue or aspirate findings belong to a distinct specimen category. Permanent stained smears near 1000× show nuclear features; iodine aids cyst assessment.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/amebiasis/index.html"
+        }
+      ]
+    }
+  ]
+}

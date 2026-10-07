@@ -1,0 +1,23 @@
+{
+  "species_id": "balantioides_coli",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Balantioides coli?",
+      "options": [
+        "Microfilariae in a peripheral blood film.",
+        "Trophozoites or cysts in stool.",
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 1,
+      "explanation": "Trophozoites or cysts in stool. Fresh wet mounts at 100–400× demonstrate large, ciliated motile trophozoites; permanent preparations support morphology.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/balantidiasis/index.html"
+        }
+      ]
+    }
+  ]
+}

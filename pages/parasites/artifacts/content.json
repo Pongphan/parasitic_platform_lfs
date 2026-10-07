@@ -1,0 +1,101 @@
+{
+  "id": "artifacts",
+  "name": "Artifacts and non-parasitic mimics",
+  "common_name": "Microscopy background and look-alikes",
+  "group": "Artifacts",
+  "taxonomy": {
+    "lineage": "Non-taxonomic reference group",
+    "genus": null,
+    "scientific_name": "Artifacts and non-parasitic mimics",
+    "species_epithet": null,
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Pollen, plant cells, starch, yeast, fat droplets, air bubbles and precipitate vary widely in size and outline.",
+    "Refractile borders, budding, regular plant walls or absence of coherent parasite anatomy can guide review, but no single artifact rule is universal."
+  ],
+  "transmission": {
+    "types": [
+      "Not applicable"
+    ],
+    "detail": "Artifacts have no parasite life cycle; they originate in specimens, preparation, staining or image acquisition."
+  },
+  "life_cycle": [
+    {
+      "stage": "Transmission and development",
+      "detail": "Artifacts have no parasite life cycle; they originate in specimens, preparation, staining or image acquisition."
+    },
+    {
+      "stage": "Diagnostic stages and specimen",
+      "detail": "Background objects in stool, blood films or other preparations; record the actual specimen matrix."
+    }
+  ],
+  "hosts": "No definitive or intermediate host applies.",
+  "distribution": "All laboratory settings and preparation methods.",
+  "clinical_significance": "Mimics cause false positives and inaccurate counts; recognizing them is an essential negative-control skill.",
+  "clinical_tags": [
+    "Non-parasitic mimic"
+  ],
+  "specimen": "Background objects in stool, blood films or other preparations; record the actual specimen matrix.",
+  "diagnostics": [
+    "Review focal planes, stain, calibrated size and surrounding context; seek coherent diagnostic anatomy rather than a single color or outline."
+  ],
+  "differential_diagnosis": [
+    "A negative parasite classification does not identify a specific artifact.",
+    "Keep uncertain objects separate from verified artifacts; YOLO class_0 has no verified meaning here."
+  ],
+  "aliases": [
+    "artifact",
+    "debris"
+  ],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "reference_group",
+  "description": "Artifacts and non-parasitic mimics — Microscopy background and look-alikes. Mimics cause false positives and inaccurate counts; recognizing them is an essential negative-control skill.",
+  "images": [
+    {
+      "file": "morphology_schematic.svg",
+      "caption": "Representative non-parasitic mimics. Original educational schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0",
+      "kind": "schematic",
+      "source_basis": "Morphology fields and cited references in this Atlas entry."
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/artifacts/index.html"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/artifacts/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "artifacts",
+  "classifier_labels": [
+    "artifact"
+  ],
+  "model_mapping": {
+    "exact_labels": [
+      "artifact"
+    ],
+    "related_atlas_id": null,
+    "status": "Configured label match",
+    "note": "Configured labels link to this reference; they do not validate species identity or model performance.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

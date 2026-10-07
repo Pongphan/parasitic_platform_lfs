@@ -1,0 +1,23 @@
+{
+  "species_id": "iodamoeba_buetschlii",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Iodamoeba buetschlii?",
+      "options": [
+        "Cysts or trophozoites in stool.",
+        "Microfilariae in a peripheral blood film.",
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 0,
+      "explanation": "Cysts or trophozoites in stool. Iodine aids cyst assessment; permanent stained smears near 1000× resolve nuclei.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/intestinalamebae/index.html"
+        }
+      ]
+    }
+  ]
+}

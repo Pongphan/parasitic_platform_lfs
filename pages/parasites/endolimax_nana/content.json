@@ -1,0 +1,94 @@
+{
+  "id": "endolimax_nana",
+  "name": "Endolimax nana",
+  "common_name": "Nonpathogenic intestinal amoeba",
+  "group": "Protozoa",
+  "taxonomy": {
+    "lineage": "Amoebozoa > Archamoebae (lineage)",
+    "genus": "Endolimax",
+    "scientific_name": "Endolimax nana",
+    "species_epithet": "nana",
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Cyst: approximately 5–10 µm, oval to round, with four nuclei when mature and blot-like karyosomes without peripheral chromatin.",
+    "Small trophozoites have prominent irregular karyosomes; unstained internal details may be difficult to resolve."
+  ],
+  "transmission": {
+    "types": [
+      "Fecal-oral"
+    ],
+    "detail": "Ingested cysts establish colonization; trophozoites multiply in the intestine and encyst before shedding."
+  },
+  "life_cycle": [
+    {
+      "stage": "Transmission and development",
+      "detail": "Ingested cysts establish colonization; trophozoites multiply in the intestine and encyst before shedding."
+    },
+    {
+      "stage": "Diagnostic stages and specimen",
+      "detail": "Cysts or trophozoites in stool."
+    }
+  ],
+  "hosts": "Humans are the principal clinical host; no intermediate host.",
+  "distribution": "Worldwide, including Southeast Asia; findings indicate fecal exposure.",
+  "clinical_significance": "Generally considered nonpathogenic. Correct identification helps avoid attributing symptoms to a harmless colonizer.",
+  "clinical_tags": [
+    "Nonpathogenic colonizer"
+  ],
+  "specimen": "Cysts or trophozoites in stool.",
+  "diagnostics": [
+    "Iodine aids cyst assessment; permanent stained smears near 1000× resolve nuclei.",
+    "Interpret glycogen in iodine mounts and chromatin in permanent stains separately."
+  ],
+  "differential_diagnosis": [
+    "Immature or degraded amoebae may resemble the E. histolytica complex. Combine calibrated size, mature nuclear count and chromatin pattern."
+  ],
+  "aliases": [],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "species",
+  "description": "Endolimax nana — Nonpathogenic intestinal amoeba. Generally considered nonpathogenic. Correct identification helps avoid attributing symptoms to a harmless colonizer.",
+  "images": [
+    {
+      "file": "morphology_schematic.svg",
+      "caption": "Mature cyst. Original educational schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0",
+      "kind": "schematic",
+      "source_basis": "Morphology fields and cited references in this Atlas entry."
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/intestinalamebae/index.html"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/intestinalamebae/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "endolimax nana",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": null,
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

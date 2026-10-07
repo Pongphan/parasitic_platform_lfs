@@ -1,0 +1,23 @@
+{
+  "species_id": "cystoisospora_belli",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Cystoisospora belli?",
+      "options": [
+        "Microfilariae in a peripheral blood film.",
+        "Oocysts in stool; shedding may be intermittent.",
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 1,
+      "explanation": "Oocysts in stool; shedding may be intermittent. Concentration and modified acid-fast staining around 400×; further sampling or molecular methods can assist difficult cases.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/cystoisosporiasis/index.html"
+        }
+      ]
+    }
+  ]
+}

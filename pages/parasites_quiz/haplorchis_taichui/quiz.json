@@ -1,0 +1,27 @@
+{
+  "species_id": "haplorchis_taichui",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Haplorchis taichui?",
+      "options": [
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen.",
+        "Microfilariae in a peripheral blood film.",
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Eggs in stool; recovered adults or molecular material for species confirmation."
+      ],
+      "correct_answer": 3,
+      "explanation": "Eggs in stool; recovered adults or molecular material for species confirmation. Wet mount/concentration at about 400× identifies small-fluke eggs.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/32588808/"
+        },
+        {
+          "title": "Published Haplorchis egg morphology and size variation",
+          "url": "https://folia.paru.cas.cz/pdfs/fol/1992/02/03.pdf"
+        }
+      ]
+    }
+  ]
+}

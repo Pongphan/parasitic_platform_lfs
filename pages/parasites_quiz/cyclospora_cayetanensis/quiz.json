@@ -1,0 +1,23 @@
+{
+  "species_id": "cyclospora_cayetanensis",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Cyclospora cayetanensis?",
+      "options": [
+        "Microfilariae in a peripheral blood film.",
+        "Unsporulated oocysts in stool.",
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 1,
+      "explanation": "Unsporulated oocysts in stool. Concentration, modified acid-fast microscopy and fluorescence support detection; molecular assays can confirm.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/cyclosporiasis/index.html"
+        }
+      ]
+    }
+  ]
+}

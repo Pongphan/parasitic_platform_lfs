@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "species_id": "giardia_duodenalis",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Which stage is chiefly responsible for transmission?",
+      "options": [
+        "Egg",
+        "Cyst",
+        "Cercaria",
+        "Microfilaria"
+      ],
+      "correct_answer": 1,
+      "explanation": "The resistant cyst survives outside the host and is ingested."
+    },
+    {
+      "id": "q2",
+      "question": "How many nuclei occur in a mature cyst?",
+      "options": [
+        "One",
+        "Two",
+        "Four",
+        "Eight"
+      ],
+      "correct_answer": 2,
+      "explanation": "Mature Giardia cysts have four nuclei."
+    },
+    {
+      "id": "q3",
+      "question": "Which clinical pattern fits giardiasis?",
+      "options": [
+        "Biliary fluke obstruction",
+        "Malabsorption with diarrhea",
+        "Urinary egg shedding",
+        "An adult tapeworm in muscle"
+      ],
+      "correct_answer": 1,
+      "explanation": "Giardiasis may cause diarrhea and impaired absorption in the intestine."
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+[theme]
+base = "component_theme/theme.toml"
+[client]
+showSidebarNavigation = false
+toolbarMode = "minimal"
+[server]
+maxUploadSize = 25
+headless = true
+[browser]
+gatherUsageStats = false

@@ -1,0 +1,97 @@
+{
+  "id": "cystoisospora_belli",
+  "name": "Cystoisospora belli",
+  "common_name": "Cystoisospora intestinal coccidian",
+  "group": "Protozoa",
+  "taxonomy": {
+    "lineage": "Alveolata > Apicomplexa > Conoidasida",
+    "genus": "Cystoisospora",
+    "scientific_name": "Cystoisospora belli",
+    "species_epithet": "belli",
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Oocyst: approximately 20–33 × 10–19 µm, elongated oval, usually with one sporoblast when passed.",
+    "Mature forms have two sporocysts; modified acid-fast preparations often show pink-red oocysts."
+  ],
+  "transmission": {
+    "types": [
+      "Fecal-oral"
+    ],
+    "detail": "Oocysts mature outside the host; ingestion of sporulated oocysts leads to small-intestinal infection and shedding."
+  },
+  "life_cycle": [
+    {
+      "stage": "Transmission and development",
+      "detail": "Oocysts mature outside the host; ingestion of sporulated oocysts leads to small-intestinal infection and shedding."
+    },
+    {
+      "stage": "Diagnostic stages and specimen",
+      "detail": "Oocysts in stool; shedding may be intermittent."
+    }
+  ],
+  "hosts": "Humans are the principal host; no intermediate host.",
+  "distribution": "Worldwide, particularly tropical and subtropical areas.",
+  "clinical_significance": "Watery diarrhea and malabsorption; prolonged severe infection is important in immunocompromised patients.",
+  "clinical_tags": [
+    "Intestinal disease",
+    "Malabsorption",
+    "Immunocompromised risk"
+  ],
+  "specimen": "Oocysts in stool; shedding may be intermittent.",
+  "diagnostics": [
+    "Concentration and modified acid-fast staining around 400×; further sampling or molecular methods can assist difficult cases."
+  ],
+  "differential_diagnosis": [
+    "Larger and more elongated than Cryptosporidium or Cyclospora; annotate sporulation state separately from species."
+  ],
+  "aliases": [
+    "Isospora belli"
+  ],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "species",
+  "description": "Cystoisospora belli — Cystoisospora intestinal coccidian. Watery diarrhea and malabsorption; prolonged severe infection is important in immunocompromised patients.",
+  "images": [
+    {
+      "file": "morphology_schematic.svg",
+      "caption": "Immature oocyst (freshly passed). Original educational schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0",
+      "kind": "schematic",
+      "source_basis": "Morphology fields and cited references in this Atlas entry."
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/cystoisosporiasis/index.html"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/cystoisosporiasis/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "cystoisospora belli",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": null,
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

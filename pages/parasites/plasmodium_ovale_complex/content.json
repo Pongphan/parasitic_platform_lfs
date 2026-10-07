@@ -1,0 +1,110 @@
+{
+  "id": "plasmodium_ovale_complex",
+  "name": "Plasmodium ovale complex",
+  "common_name": "Ovale malaria",
+  "group": "Blood parasites",
+  "taxonomy": {
+    "lineage": "Alveolata > Apicomplexa > Aconoidasida",
+    "genus": "Plasmodium",
+    "scientific_name": "Plasmodium ovale complex",
+    "species_epithet": null,
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Infected erythrocytes may enlarge, become oval and show fimbriated edges and stippling. Mature schizonts often contain 6–14 merozoites.",
+    "These are blood stages, not eggs; erythrocyte context is essential, and crop pixels do not establish biological size."
+  ],
+  "transmission": {
+    "types": [
+      "Vector-borne"
+    ],
+    "detail": "Anopheles inoculates sporozoites, followed by liver development and erythrocytic replication; gametocytes infect mosquitoes, where sexual reproduction occurs. Liver hypnozoites may persist."
+  },
+  "life_cycle": [
+    {
+      "stage": "Transmission and development",
+      "detail": "Anopheles inoculates sporozoites, followed by liver development and erythrocytic replication; gametocytes infect mosquitoes, where sexual reproduction occurs. Liver hypnozoites may persist."
+    },
+    {
+      "stage": "Diagnostic stages and specimen",
+      "detail": "Asexual parasites and gametocytes in peripheral blood; thick and thin films serve different purposes."
+    }
+  ],
+  "hosts": "Definitive: Anopheles mosquito. Intermediate: humans; macaques are important reservoirs for P. knowlesi.",
+  "distribution": "Focal distribution: falciparum and vivax malaria are especially relevant to Thai border/forest exposure; other species may be uncommon or imported. Ovale malaria is particularly associated with sub-Saharan African exposure.",
+  "clinical_significance": "Relapsing malaria due to liver hypnozoites; includes P. ovale curtisi and P. ovale wallikeri.",
+  "clinical_tags": [
+    "Febrile blood disease",
+    "Anemia"
+  ],
+  "specimen": "Asexual parasites and gametocytes in peripheral blood; thick and thin films serve different purposes.",
+  "diagnostics": [
+    "Giemsa thick films support detection; thin films preserve erythrocytes for identification, typically at 1000× oil immersion.",
+    "Rapid diagnostic tests complement microscopy; molecular assays resolve difficult species identifications."
+  ],
+  "differential_diagnosis": [
+    "The two P. ovale taxa cannot reliably be separated by microscopy; distinguish from P. vivax using several features."
+  ],
+  "aliases": [],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "reference_group",
+  "description": "Plasmodium ovale complex — Ovale malaria. Relapsing malaria due to liver hypnozoites; includes P. ovale curtisi and P. ovale wallikeri.",
+  "images": [
+    {
+      "file": "morphology_schematic.svg",
+      "caption": "Trophozoite in an infected erythrocyte. Original educational schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0",
+      "kind": "schematic",
+      "source_basis": "Morphology fields and cited references in this Atlas entry."
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/malaria/index.html"
+    },
+    {
+      "title": "CDC blood specimen microscopy",
+      "url": "https://www.cdc.gov/dpdx/diagnosticprocedures/blood/microexam.html"
+    },
+    {
+      "title": "Plasmodium ovale complex — CDC microscopy bench aid",
+      "url": "https://www.cdc.gov/dpdx/resources/pdf/benchAids/malaria/Povale_benchaidV2.pdf"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/resources/pdf/benchAids/malaria/Povale_benchaidV2.pdf",
+      "caption": "Species-focused thick- and thin-film reference images in the CDC bench aid.",
+      "kind": "external_reference",
+      "rights": "Consult the source's image attribution and reuse terms."
+    },
+    {
+      "url": "https://www.cdc.gov/dpdx/malaria/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "plasmodium ovale complex",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": null,
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species.",
+    "Separate thick and thin films; retain erythrocyte context for malaria and full head/tail context for microfilariae."
+  ]
+}

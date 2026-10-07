@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "species_id": "opisthorchis_viverrini",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Which food exposure transmits this parasite?",
+      "options": [
+        "Undercooked freshwater fish",
+        "Unwashed berries only",
+        "Undercooked beef",
+        "Mosquito bites"
+      ],
+      "correct_answer": 0,
+      "explanation": "Metacercariae in freshwater fish infect the definitive host when eaten."
+    },
+    {
+      "id": "q2",
+      "question": "Where do adult worms primarily reside?",
+      "options": [
+        "Blood cells",
+        "Bile ducts",
+        "Skeletal muscle",
+        "Urinary bladder"
+      ],
+      "correct_answer": 1,
+      "explanation": "The adult fluke lives in the biliary system."
+    },
+    {
+      "id": "q3",
+      "question": "Which egg feature supports recognition?",
+      "options": [
+        "Radial striations",
+        "A lateral spine",
+        "An operculum with shoulders",
+        "Four nuclei"
+      ],
+      "correct_answer": 2,
+      "explanation": "The egg has an operculum and shoulders; related fluke eggs can look similar."
+    }
+  ]
+}

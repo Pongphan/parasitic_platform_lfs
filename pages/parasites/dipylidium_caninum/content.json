@@ -1,0 +1,93 @@
+{
+  "id": "dipylidium_caninum",
+  "name": "Dipylidium caninum",
+  "common_name": "Dog and cat flea tapeworm",
+  "group": "Cestodes",
+  "taxonomy": {
+    "lineage": "Platyhelminthes > Cestoda > Dipylidiidae",
+    "genus": "Dipylidium",
+    "scientific_name": "Dipylidium caninum",
+    "species_epithet": "caninum",
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Eggs occur in packets, often containing multiple six-hooked embryos; individual eggs are roughly 35–40 µm.",
+    "Proglottids resemble cucumber seeds or rice grains and have paired genital pores."
+  ],
+  "transmission": {
+    "types": [
+      "Food-borne"
+    ],
+    "detail": "Flea larvae acquire eggs and develop cysticercoids; swallowing an infected flea transmits the tapeworm."
+  },
+  "life_cycle": [
+    {
+      "stage": "Transmission and development",
+      "detail": "Flea larvae acquire eggs and develop cysticercoids; swallowing an infected flea transmits the tapeworm."
+    },
+    {
+      "stage": "Diagnostic stages and specimen",
+      "detail": "Egg packets or proglottids in stool or perianal material."
+    }
+  ],
+  "hosts": "Definitive: dogs and cats, occasionally humans, especially children. Intermediate: fleas, occasionally chewing lice.",
+  "distribution": "Worldwide where infected pets and fleas occur; human infection is uncommon.",
+  "clinical_significance": "Often mild; segment passage and perianal discomfort may prompt investigation.",
+  "clinical_tags": [
+    "Intestinal disease"
+  ],
+  "specimen": "Egg packets or proglottids in stool or perianal material.",
+  "diagnostics": [
+    "Inspect packets at 100× and individual embryos near 400×; examine segment morphology when available."
+  ],
+  "differential_diagnosis": [
+    "Annotate packet and individual egg as different object types; do not count a packet automatically as one biological egg."
+  ],
+  "aliases": [],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "species",
+  "description": "Dipylidium caninum — Dog and cat flea tapeworm. Often mild; segment passage and perianal discomfort may prompt investigation.",
+  "images": [
+    {
+      "file": "morphology_schematic.svg",
+      "caption": "Egg packet. Original educational schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0",
+      "kind": "schematic",
+      "source_basis": "Morphology fields and cited references in this Atlas entry."
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/dipylidium/index.html"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/dipylidium/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "dipylidium caninum",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": null,
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

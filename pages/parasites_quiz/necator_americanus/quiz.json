@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "species_id": "necator_americanus",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Which stage penetrates skin?",
+      "options": [
+        "Filariform larva",
+        "Egg",
+        "Cyst"
+      ],
+      "correct_answer": 0,
+      "explanation": "The filariform larva is infective."
+    },
+    {
+      "id": "q2",
+      "question": "Which complication follows blood loss?",
+      "options": [
+        "Cysticercosis",
+        "Anemia",
+        "Malaria"
+      ],
+      "correct_answer": 1,
+      "explanation": "Adult attachment can cause chronic blood loss."
+    },
+    {
+      "id": "q3",
+      "question": "Can eggs reliably identify the hookworm species?",
+      "options": [
+        "No",
+        "Yes"
+      ],
+      "correct_answer": 0,
+      "explanation": "Hookworm eggs overlap morphologically."
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+-r requirements.txt
+# Keep a matched torch/torchvision release pair (CPU or CUDA build as appropriate).
+torch>=2.6,<3
+torchvision>=0.21,<1

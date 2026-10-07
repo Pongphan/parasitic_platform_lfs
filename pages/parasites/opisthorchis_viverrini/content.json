@@ -1,0 +1,111 @@
+{
+  "id": "opisthorchis_viverrini",
+  "name": "Opisthorchis viverrini",
+  "common_name": "Southeast Asian liver fluke",
+  "group": "Trematodes",
+  "taxonomy": {
+    "lineage": "Platyhelminthes > Trematoda > Opisthorchiidae",
+    "genus": "Opisthorchis",
+    "scientific_name": "Opisthorchis viverrini",
+    "species_epithet": "viverrini",
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Egg: approximately 19–30 × 10–20 µm; yellow-brown, embryonated, with an operculum, shoulders and a small opposite-end knob.",
+    "Adults occupy bile ducts; metacercariae in fish are infective to humans."
+  ],
+  "transmission": {
+    "types": [
+      "Food-borne"
+    ],
+    "detail": "Eggs reach water in feces; development in snails precedes cercarial infection of freshwater fish. Eating fish containing viable metacercariae introduces flukes that mature in bile ducts."
+  },
+  "life_cycle": [
+    {
+      "stage": "Eggs in stool",
+      "detail": "Eggs leave the definitive host in feces."
+    },
+    {
+      "stage": "Snail host",
+      "detail": "A freshwater snail ingests eggs; larval stages develop."
+    },
+    {
+      "stage": "Freshwater fish",
+      "detail": "Cercariae leave the snail and encyst as metacercariae in fish."
+    },
+    {
+      "stage": "Human host",
+      "detail": "Eating infected undercooked fish introduces larvae that mature in bile ducts."
+    }
+  ],
+  "hosts": "Definitive: humans and fish-eating mammals, including cats and dogs. Intermediate: freshwater snail, then cyprinid fish.",
+  "distribution": "Focal transmission in Thailand and the Mekong region, associated with raw or undercooked freshwater fish.",
+  "clinical_significance": "Light infection may be silent; chronic infection can cause biliary inflammation and obstruction and is associated with cholangiocarcinoma.",
+  "clinical_tags": [
+    "Hepatobiliary disease",
+    "Cancer association"
+  ],
+  "specimen": "Embryonated eggs in stool; adult worms are uncommon routine specimens.",
+  "diagnostics": [
+    "Stool wet mount and concentration; inspect opercular detail around 400× total magnification.",
+    "Molecular testing can help resolve small-fluke infections when available."
+  ],
+  "differential_diagnosis": [
+    "Eggs overlap Clonorchis and minute intestinal flukes; morphology alone may not establish species.",
+    "Dataset OV sub-variants should remain appearance attributes unless independently verified as biological taxa."
+  ],
+  "aliases": [
+    "OV",
+    "OV egg"
+  ],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "species",
+  "description": "Opisthorchis viverrini — Southeast Asian liver fluke. Light infection may be silent; chronic infection can cause biliary inflammation and obstruction and is associated with cholangiocarcinoma.",
+  "images": [
+    {
+      "file": "morphology.svg",
+      "caption": "Original schematic of a cyst or egg · not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0"
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/opisthorchiasis/index.html"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/opisthorchiasis/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "opisthorchis viverrini",
+  "classifier_labels": [
+    "Opisthorchis viverrini egg"
+  ],
+  "model_mapping": {
+    "exact_labels": [
+      "Opisthorchis viverrini egg"
+    ],
+    "related_atlas_id": null,
+    "status": "Configured label match",
+    "note": "Configured labels link to this reference; they do not validate species identity or model performance.",
+    "configured_detector_aliases": [
+      "class_1"
+    ]
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

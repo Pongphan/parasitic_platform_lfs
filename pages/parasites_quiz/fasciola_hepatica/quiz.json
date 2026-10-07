@@ -1,0 +1,23 @@
+{
+  "species_id": "fasciola_hepatica",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Fasciola hepatica?",
+      "options": [
+        "Eggs in stool during patent biliary infection; early invasive infection can be egg-negative.",
+        "Microfilariae in a peripheral blood film.",
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 0,
+      "explanation": "Eggs in stool during patent biliary infection; early invasive infection can be egg-negative. Stool microscopy at 100–400× in the patent phase.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/fascioliasis/index.html"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "species_id": "ascaris_lumbricoides",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Which stage initiates infection?",
+      "options": [
+        "Unfertilized egg",
+        "Embryonated fertile egg",
+        "Fish metacercaria",
+        "Cercaria"
+      ],
+      "correct_answer": 1,
+      "explanation": "Infection follows ingestion of fertile eggs containing developed larvae."
+    },
+    {
+      "id": "q2",
+      "question": "Which organ is part of larval migration?",
+      "options": [
+        "Lung",
+        "Urinary bladder",
+        "Retina only",
+        "Thyroid"
+      ],
+      "correct_answer": 0,
+      "explanation": "Larvae pass through the lungs before being swallowed back into the intestine."
+    },
+    {
+      "id": "q3",
+      "question": "What does a decorticated egg lack?",
+      "options": [
+        "All internal contents",
+        "Its entire shell",
+        "The outer mammillated coat",
+        "A pair of polar plugs"
+      ],
+      "correct_answer": 2,
+      "explanation": "Decorticated Ascaris eggs lack the outer mammillated layer."
+    }
+  ]
+}

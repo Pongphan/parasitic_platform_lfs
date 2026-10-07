@@ -1,0 +1,23 @@
+{
+  "species_id": "blastocystis_spp",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Blastocystis spp.?",
+      "options": [
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Microfilariae in a peripheral blood film.",
+        "Vacuolar and other forms in stool; use stage-qualified labels.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 2,
+      "explanation": "Vacuolar and other forms in stool; use stage-qualified labels. Wet mounts and permanent stained smears at 400–1000×; molecular analysis identifies subtypes.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/blastocystis/index.html"
+        }
+      ]
+    }
+  ]
+}

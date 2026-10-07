@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "species_id": "strongyloides_stercoralis",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is usually found in stool?",
+      "options": [
+        "Rhabditiform larvae",
+        "Operculated eggs",
+        "Proglottids"
+      ],
+      "correct_answer": 0,
+      "explanation": "Larvae are the usual stool diagnostic stage."
+    },
+    {
+      "id": "q2",
+      "question": "Which process permits prolonged persistence?",
+      "options": [
+        "Fish encystation",
+        "Autoinfection",
+        "Mosquito transmission"
+      ],
+      "correct_answer": 1,
+      "explanation": "Autoinfection can maintain infection."
+    },
+    {
+      "id": "q3",
+      "question": "Which context increases hyperinfection concern?",
+      "options": [
+        "Blood group O alone",
+        "Normal eyesight",
+        "Immunosuppression"
+      ],
+      "correct_answer": 2,
+      "explanation": "Immunosuppression can permit severe disease."
+    }
+  ]
+}

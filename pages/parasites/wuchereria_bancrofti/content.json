@@ -1,0 +1,99 @@
+{
+  "id": "wuchereria_bancrofti",
+  "name": "Wuchereria bancrofti",
+  "common_name": "Bancroftian lymphatic filaria",
+  "group": "Blood parasites",
+  "taxonomy": {
+    "lineage": "Nematoda > Chromadorea > Onchocercidae",
+    "genus": "Wuchereria",
+    "scientific_name": "Wuchereria bancrofti",
+    "species_epithet": "bancrofti",
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Stained microfilaria: about 240–300 µm, sheathed and gently curved, with nuclei that do not extend to the tail tip.",
+    "Adults inhabit lymphatic vessels; blood images show microfilariae, not adult worms or eggs."
+  ],
+  "transmission": {
+    "types": [
+      "Vector-borne"
+    ],
+    "detail": "Mosquitoes ingest microfilariae and later transmit infective larvae; adults develop in lymphatics and release blood microfilariae."
+  },
+  "life_cycle": [
+    {
+      "stage": "Transmission and development",
+      "detail": "Mosquitoes ingest microfilariae and later transmit infective larvae; adults develop in lymphatics and release blood microfilariae."
+    },
+    {
+      "stage": "Diagnostic stages and specimen",
+      "detail": "Microfilariae in peripheral blood; collection time matters because periodicity varies by population."
+    }
+  ],
+  "hosts": "Definitive: humans. Intermediate/vector: mosquitoes; relevant genera vary by setting.",
+  "distribution": "Tropical foci worldwide. Thailand achieved lymphatic-filariasis elimination as a public-health problem in 2017; this does not mean eradication or absence of imported infection.",
+  "clinical_significance": "Lymphatic damage can cause lymphedema, elephantiasis and hydrocele; early infection may be silent.",
+  "clinical_tags": [
+    "Lymphatic disease"
+  ],
+  "specimen": "Microfilariae in peripheral blood; collection time matters because periodicity varies by population.",
+  "diagnostics": [
+    "Giemsa films or concentration; scan at lower magnification and inspect sheath/tail at higher power.",
+    "Antigen and molecular tests may supplement microscopy."
+  ],
+  "differential_diagnosis": [
+    "Brugia malayi has separated terminal/subterminal tail nuclei; retain the complete tail and sheath in reference images."
+  ],
+  "aliases": [],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "species",
+  "description": "Wuchereria bancrofti — Bancroftian lymphatic filaria. Lymphatic damage can cause lymphedema, elephantiasis and hydrocele; early infection may be silent.",
+  "images": [
+    {
+      "file": "morphology_schematic.svg",
+      "caption": "Sheathed microfilaria. Original educational schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0",
+      "kind": "schematic",
+      "source_basis": "Morphology fields and cited references in this Atlas entry."
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/lymphaticfilariasis/index.html"
+    },
+    {
+      "title": "WHO: lymphatic filariasis elimination in Thailand",
+      "url": "https://www.who.int/southeastasia/activities/elimination-of-lymphatic-filariasis-as-a-public-health-problem-in-thailand"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/lymphaticfilariasis/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "wuchereria bancrofti",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": null,
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species.",
+    "Separate thick and thin films; retain erythrocyte context for malaria and full head/tail context for microfilariae."
+  ]
+}

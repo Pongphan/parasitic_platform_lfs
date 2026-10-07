@@ -1,0 +1,27 @@
+{
+  "species_id": "wuchereria_bancrofti",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Wuchereria bancrofti?",
+      "options": [
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen.",
+        "Operculated fluke eggs in a stool wet mount.",
+        "Microfilariae in peripheral blood; collection time matters because periodicity varies by population.",
+        "Giardia cysts with four nuclei in a stool preparation."
+      ],
+      "correct_answer": 2,
+      "explanation": "Microfilariae in peripheral blood; collection time matters because periodicity varies by population. Giemsa films or concentration; scan at lower magnification and inspect sheath/tail at higher power.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/lymphaticfilariasis/index.html"
+        },
+        {
+          "title": "WHO: lymphatic filariasis elimination in Thailand",
+          "url": "https://www.who.int/southeastasia/activities/elimination-of-lymphatic-filariasis-as-a-public-health-problem-in-thailand"
+        }
+      ]
+    }
+  ]
+}

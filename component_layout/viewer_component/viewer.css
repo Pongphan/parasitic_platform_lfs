@@ -1,0 +1,28 @@
+/* Existing 2026 viewer controls with the 2027 clinical pastel palette. */
+:root[data-theme="light"] {
+  --canvas-bg:#EAF1EC; --text:#203C36; --muted:#536B63;
+  --glass:#F8FAF7E8; --glass-strong:#E0ECE8; --stroke:#8BA39B;
+  --accent:#20665C; --accent-soft:#D1E5DE; --shadow:0 8px 20px #203C3615;
+  --grid-line:#ADD8E6; --center-line:#2563EB; --center-fill:#2563EB1A;
+}
+:root[data-theme="dark"] {
+  /* Keep the scientific overlay colors consistent in both app themes. */
+  --grid-line:#ADD8E6; --center-line:#2563EB; --center-fill:#2563EB20;
+}
+.hint {max-width:55%;border-radius:10px;}
+.fit-btn {position:absolute;left:10px;top:10px;z-index:5;}
+.calc-btn {background:#20665C;color:#FFFFFF;max-width:65%;}
+.calc-btn:hover {background:#184F47;color:#FFFFFF;}
+@media(max-width:450px){
+  .wrap {height:auto!important;display:flex;flex-wrap:wrap;gap:8px;}
+  .hint {display:block;position:static;width:100%;max-width:none;box-sizing:border-box;font-size:12px;}
+  .calc-btn {position:static;flex:1;max-width:none;padding:9px 10px;}
+  .fit-btn {position:static;padding:9px 10px;}
+  .controls {position:static;width:100%;justify-content:center;}
+  .dpad {grid-template-columns:44px 44px 44px;grid-template-rows:44px 44px 44px;}
+  .icon-btn,.empty {width:44px;height:44px;}
+  .zoom-btn {min-width:44px;height:44px;}
+  .btn {min-height:44px;}
+}
+button:focus-visible,canvas:focus-visible {outline:3px solid var(--accent);outline-offset:2px;}
+@media(prefers-reduced-motion:reduce){button{transition:none!important}}

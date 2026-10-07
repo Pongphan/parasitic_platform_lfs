@@ -1,0 +1,93 @@
+{
+  "id": "hymenolepis_diminuta",
+  "name": "Hymenolepis diminuta",
+  "common_name": "Rat tapeworm",
+  "group": "Cestodes",
+  "taxonomy": {
+    "lineage": "Platyhelminthes > Cestoda > Hymenolepididae",
+    "genus": "Hymenolepis",
+    "scientific_name": "Hymenolepis diminuta",
+    "species_epithet": "diminuta",
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Egg: about 70–85 × 60–80 µm, yellowish, round to oval, with a six-hooked embryo and no polar filaments.",
+    "Adult intestinal tapeworms are primarily parasites of rodents."
+  ],
+  "transmission": {
+    "types": [
+      "Food-borne"
+    ],
+    "detail": "Arthropods ingest eggs; accidental ingestion of an arthropod containing a cysticercoid introduces infection."
+  },
+  "life_cycle": [
+    {
+      "stage": "Transmission and development",
+      "detail": "Arthropods ingest eggs; accidental ingestion of an arthropod containing a cysticercoid introduces infection."
+    },
+    {
+      "stage": "Diagnostic stages and specimen",
+      "detail": "Embryonated eggs in stool."
+    }
+  ],
+  "hosts": "Definitive: rodents, occasionally humans. Intermediate: grain beetles and other arthropods.",
+  "distribution": "Worldwide sporadic human infection; consider accidental insect ingestion.",
+  "clinical_significance": "Usually mild intestinal infection, occasionally abdominal pain or diarrhea.",
+  "clinical_tags": [
+    "Intestinal disease"
+  ],
+  "specimen": "Embryonated eggs in stool.",
+  "diagnostics": [
+    "Wet mount/concentration at 100–400×; document size and absence of filaments in well-focused eggs."
+  ],
+  "differential_diagnosis": [
+    "Compare with smaller H. nana eggs bearing polar filaments and with nonparasitic pollen."
+  ],
+  "aliases": [],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "species",
+  "description": "Hymenolepis diminuta — Rat tapeworm. Usually mild intestinal infection, occasionally abdominal pain or diarrhea.",
+  "images": [
+    {
+      "file": "morphology_schematic.svg",
+      "caption": "Egg. Original educational schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0",
+      "kind": "schematic",
+      "source_basis": "Morphology fields and cited references in this Atlas entry."
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/hymenolepiasis/index.html"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/hymenolepiasis/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "hymenolepis diminuta",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": null,
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "species_id": "dipylidium_caninum",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Dipylidium caninum?",
+      "options": [
+        "Egg packets or proglottids in stool or perianal material.",
+        "Microfilariae in a peripheral blood film.",
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 0,
+      "explanation": "Egg packets or proglottids in stool or perianal material. Inspect packets at 100× and individual embryos near 400×; examine segment morphology when available.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/dipylidium/index.html"
+        }
+      ]
+    }
+  ]
+}

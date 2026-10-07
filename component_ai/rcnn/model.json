@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "architecture": "fasterrcnn_resnet50_fpn",
+  "backbone_norm": "frozen_batch_norm2d",
+  "weights": "weights/parasite_fasterrcnn.pth",
+  "labels": ["__background__", "artifact", "Opisthorchis viverrini egg", "Minute intestinal fluke egg"],
+  "min_size": 800,
+  "max_size": 1333,
+  "detections_per_image": 100
+}

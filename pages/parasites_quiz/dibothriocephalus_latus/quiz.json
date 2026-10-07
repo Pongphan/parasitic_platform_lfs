@@ -1,0 +1,23 @@
+{
+  "species_id": "dibothriocephalus_latus",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Dibothriocephalus latus?",
+      "options": [
+        "Microfilariae in a peripheral blood film.",
+        "Operculated eggs and proglottids in stool.",
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 1,
+      "explanation": "Operculated eggs and proglottids in stool. Wet mounts at 100–400×; molecular testing can resolve related fish tapeworm species.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/diphyllobothriasis/index.html"
+        }
+      ]
+    }
+  ]
+}

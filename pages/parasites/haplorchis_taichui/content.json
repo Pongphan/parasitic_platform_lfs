@@ -1,0 +1,100 @@
+{
+  "id": "haplorchis_taichui",
+  "name": "Haplorchis taichui",
+  "common_name": "Minute intestinal fluke",
+  "group": "Trematodes",
+  "taxonomy": {
+    "lineage": "Platyhelminthes > Trematoda > Heterophyidae",
+    "genus": "Haplorchis",
+    "scientific_name": "Haplorchis taichui",
+    "species_epithet": "taichui",
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Egg: roughly 27–32 × 13–18 µm in published descriptions, with host-dependent variation; small, brownish, embryonated and operculated.",
+    "Adults are tiny intestinal flukes; fine adult anatomy is more informative than routine egg appearance."
+  ],
+  "transmission": {
+    "types": [
+      "Food-borne"
+    ],
+    "detail": "Snail development is followed by metacercarial encystment in freshwater fish; ingestion leads to intestinal adults and stool eggs."
+  },
+  "life_cycle": [
+    {
+      "stage": "Transmission and development",
+      "detail": "Snail development is followed by metacercarial encystment in freshwater fish; ingestion leads to intestinal adults and stool eggs."
+    },
+    {
+      "stage": "Diagnostic stages and specimen",
+      "detail": "Eggs in stool; recovered adults or molecular material for species confirmation."
+    }
+  ],
+  "hosts": "Definitive: humans and other fish-eating mammals. Intermediate: snail and freshwater fish.",
+  "distribution": "Thailand and neighboring Mekong countries; distribution depends on fish consumption and local host ecology.",
+  "clinical_significance": "Can cause intestinal irritation, abdominal discomfort and diarrhea; coinfection with other fish-borne flukes complicates attribution.",
+  "clinical_tags": [
+    "Intestinal disease"
+  ],
+  "specimen": "Eggs in stool; recovered adults or molecular material for species confirmation.",
+  "diagnostics": [
+    "Wet mount/concentration at about 400× identifies small-fluke eggs.",
+    "Use validated molecular or adult identification for species-level research labels."
+  ],
+  "differential_diagnosis": [
+    "Routine eggs can resemble OV and other MIF species; shell appearance alone is not a dependable species label."
+  ],
+  "aliases": [
+    "H. taichui"
+  ],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "species",
+  "description": "Haplorchis taichui — Minute intestinal fluke. Can cause intestinal irritation, abdominal discomfort and diarrhea; coinfection with other fish-borne flukes complicates attribution.",
+  "images": [
+    {
+      "file": "morphology_schematic.svg",
+      "caption": "Small operculated egg. Original educational schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0",
+      "kind": "schematic",
+      "source_basis": "Morphology fields and cited references in this Atlas entry."
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/32588808/"
+    },
+    {
+      "title": "Published Haplorchis egg morphology and size variation",
+      "url": "https://folia.paru.cas.cz/pdfs/fol/1992/02/03.pdf"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/heterophyiasis/index.html",
+      "caption": "Related heterophyid microscopy examples; these are not confirmed Haplorchis taichui images. See the species-specific paper under Sources.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "haplorchis taichui",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": "minute_intestinal_flukes",
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "species_id": "ancylostoma_duodenale",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Ancylostoma duodenale?",
+      "options": [
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Microfilariae in a peripheral blood film.",
+        "Segmented eggs in fresh stool; larvae may occur after specimen delay.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 2,
+      "explanation": "Segmented eggs in fresh stool; larvae may occur after specimen delay. Wet mount or concentration at 100–400×; species resolution requires molecular or appropriately validated larval/adult identification.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/hookworm/index.html"
+        },
+        {
+          "title": "Molecular identification of hookworms in Thailand",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3916468/"
+        }
+      ]
+    }
+  ]
+}

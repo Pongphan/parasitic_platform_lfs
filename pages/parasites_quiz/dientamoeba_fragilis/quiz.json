@@ -1,0 +1,23 @@
+{
+  "species_id": "dientamoeba_fragilis",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Dientamoeba fragilis?",
+      "options": [
+        "Microfilariae in a peripheral blood film.",
+        "Trophozoites in appropriately preserved stool.",
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 1,
+      "explanation": "Trophozoites in appropriately preserved stool. Permanent trichrome or iron-hematoxylin stains around 1000×; molecular assays improve detection.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/dientamoeba/index.html"
+        }
+      ]
+    }
+  ]
+}

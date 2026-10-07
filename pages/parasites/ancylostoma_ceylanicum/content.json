@@ -1,0 +1,105 @@
+{
+  "id": "ancylostoma_ceylanicum",
+  "name": "Ancylostoma ceylanicum",
+  "common_name": "Zoonotic intestinal hookworm",
+  "group": "Nematodes",
+  "taxonomy": {
+    "lineage": "Nematoda > Chromadorea > Ancylostomatidae",
+    "genus": "Ancylostoma",
+    "scientific_name": "Ancylostoma ceylanicum",
+    "species_epithet": "ceylanicum",
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Egg: commonly around 60–75 × 35–40 µm, oval, colorless and thin-shelled, with cleavage-stage blastomeres and a clear space inside the shell.",
+    "Eggs may hatch in delayed stool specimens; larvae and adults require separate identification features."
+  ],
+  "transmission": {
+    "types": [
+      "Skin penetration"
+    ],
+    "detail": "Eggs hatch in soil and larvae develop to infective L3, which enter the host and mature in the small intestine. A. duodenale can also be acquired orally."
+  },
+  "life_cycle": [
+    {
+      "stage": "Environment",
+      "detail": "Eggs pass into soil."
+    },
+    {
+      "stage": "Larvae",
+      "detail": "Larvae develop to infectivity."
+    },
+    {
+      "stage": "Exposure",
+      "detail": "Skin penetration or ingestion can transmit larvae."
+    },
+    {
+      "stage": "Intestine",
+      "detail": "Adults establish and shed eggs."
+    }
+  ],
+  "hosts": "Humans, dogs and cats are definitive hosts; no intermediate host.",
+  "distribution": "Hookworm transmission occurs in tropical and subtropical regions, including Thailand. Species prevalence needs local molecular evidence; geography alone is insufficient.",
+  "clinical_significance": "Intestinal blood loss can cause iron-deficiency anemia and nutritional impairment; skin penetration may cause localized irritation.",
+  "clinical_tags": [
+    "Intestinal disease",
+    "Anemia"
+  ],
+  "specimen": "Segmented eggs in fresh stool; larvae may occur after specimen delay.",
+  "diagnostics": [
+    "Wet mount or concentration at 100–400×; species resolution requires molecular or appropriately validated larval/adult identification."
+  ],
+  "differential_diagnosis": [
+    "Human hookworm eggs are not reliably species-specific.",
+    "Preserve Hd/Hn/Hw as unresolved dataset codes until the original annotation dictionary is verified; do not infer species from abbreviations."
+  ],
+  "aliases": [],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "species",
+  "description": "Ancylostoma ceylanicum — Zoonotic intestinal hookworm. Intestinal blood loss can cause iron-deficiency anemia and nutritional impairment; skin penetration may cause localized irritation.",
+  "images": [
+    {
+      "file": "morphology.svg",
+      "caption": "Original schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0"
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/hookworm/index.html"
+    },
+    {
+      "title": "Molecular identification of hookworms in Thailand",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3916468/"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/hookworm/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "ancylostoma ceylanicum",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": null,
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

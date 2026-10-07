@@ -1,0 +1,23 @@
+{
+  "species_id": "schistosoma_japonicum",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Schistosoma japonicum?",
+      "options": [
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Microfilariae in a peripheral blood film.",
+        "Embryonated eggs in stool; tissue eggs may also be demonstrated.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 2,
+      "explanation": "Embryonated eggs in stool; tissue eggs may also be demonstrated. Stool concentration or quantitative egg microscopy at 100–400×; low-intensity infection may need additional validated tests.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/schistosomiasis/index.html"
+        }
+      ]
+    }
+  ]
+}

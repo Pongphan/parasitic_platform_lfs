@@ -1,0 +1,23 @@
+{
+  "species_id": "hymenolepis_nana",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Hymenolepis nana?",
+      "options": [
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Microfilariae in a peripheral blood film.",
+        "Embryonated eggs in stool.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 2,
+      "explanation": "Embryonated eggs in stool. Concentrated wet mount at 400× to resolve polar filaments; assess several focal planes.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/hymenolepiasis/index.html"
+        }
+      ]
+    }
+  ]
+}

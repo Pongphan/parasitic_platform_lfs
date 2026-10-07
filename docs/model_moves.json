@@ -1,0 +1,38 @@
+[
+  {
+    "from": "component_ai/img_classified_dataset1_cnn.keras",
+    "to": "component_ai/keras/img_classified_dataset1_cnn.keras",
+    "sha256": "11b2d9b87a6c40b57d4b70471fd0a84ab17a98a8c571936c608928d6cbf0d3e1",
+    "bytes": 645781
+  },
+  {
+    "from": "component_ai/img_classified_dataset1_paca.keras",
+    "to": "component_ai/keras/img_classified_dataset1_paca.keras",
+    "sha256": "a38cc210d4ed78b1b1a16f885e224dab38672cf313378f57d610e7af9defb718",
+    "bytes": 7074933
+  },
+  {
+    "from": "component_ai/img_classified_dataset2_cnn.keras",
+    "to": "component_ai/keras/img_classified_dataset2_cnn.keras",
+    "sha256": "dcc8e9bb9a1f557f1822c3795f0da4f9dee43748129a402445d5349ce2c6edc4",
+    "bytes": 1786070
+  },
+  {
+    "from": "component_ai/img_classified_dataset2_paca.keras",
+    "to": "component_ai/keras/img_classified_dataset2_paca.keras",
+    "sha256": "2bc4a54aadcb312ea34e364646ff3c9aaff1340d86fae20ebf879e18f4735757",
+    "bytes": 7073828
+  },
+  {
+    "from": "component_ai/img_classified_transf12_cnn.keras",
+    "to": "component_ai/keras/img_classified_transf12_cnn.keras",
+    "sha256": "5fa75e2b2e5f14316de2b334e6507292782fd62d3b815365f42e99d643f017f7",
+    "bytes": 1786080
+  },
+  {
+    "from": "component_ai/img_classified_transf12_paca.keras",
+    "to": "component_ai/keras/img_classified_transf12_paca.keras",
+    "sha256": "88f381eb1332456bb493375634cc55af537e79aae184a9f02a669eca666a745c",
+    "bytes": 7073712
+  }
+]

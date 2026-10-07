@@ -1,0 +1,11 @@
+# Direct dependencies used in the local verification environment.
+# Use with: pip install -r requirements-ai.txt -c constraints-tested.txt
+streamlit==1.60.0
+tensorflow==2.21.0
+numpy==2.2.6
+Pillow==12.2.0
+pandas==3.0.3
+altair==6.1.0
+ultralytics==8.4.53
+torch==2.12.0
+torchvision==0.27.0

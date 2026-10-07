@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "species_id": "trichuris_trichiura",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "What is the characteristic egg feature?",
+      "options": [
+        "Radial striations",
+        "Four nuclei",
+        "Bipolar plugs",
+        "An operculum with shoulders"
+      ],
+      "correct_answer": 2,
+      "explanation": "Whipworm eggs have plugs at both ends of a barrel-shaped shell."
+    },
+    {
+      "id": "q2",
+      "question": "Where do adult whipworms primarily live?",
+      "options": [
+        "Cecum and ascending colon",
+        "Bile ducts",
+        "Lung alveoli",
+        "Red blood cells"
+      ],
+      "correct_answer": 0,
+      "explanation": "Adults establish in the cecum and ascending colon."
+    },
+    {
+      "id": "q3",
+      "question": "How are eggs typically passed in stool?",
+      "options": [
+        "As cysts",
+        "Already containing adult worms",
+        "Unembryonated",
+        "As swimming cercariae"
+      ],
+      "correct_answer": 2,
+      "explanation": "Eggs develop in soil after leaving the host."
+    }
+  ]
+}

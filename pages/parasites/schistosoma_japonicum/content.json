@@ -1,0 +1,94 @@
+{
+  "id": "schistosoma_japonicum",
+  "name": "Schistosoma japonicum",
+  "common_name": "Asian intestinal blood fluke",
+  "group": "Trematodes",
+  "taxonomy": {
+    "lineage": "Platyhelminthes > Trematoda > Schistosomatidae",
+    "genus": "Schistosoma",
+    "scientific_name": "Schistosoma japonicum",
+    "species_epithet": "japonicum",
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Egg: approximately 70–100 × 55–64 µm, with wider ranges in comparative references; rounded to oval, nonoperculated with an inconspicuous lateral spine or knob and a miracidium.",
+    "Adults occupy mesenteric veins; eggs traverse intestinal tissue."
+  ],
+  "transmission": {
+    "types": [
+      "Skin penetration"
+    ],
+    "detail": "Waterborne cercariae from infected snails penetrate skin; adult pairs develop in venous vessels and release eggs that can reach feces."
+  },
+  "life_cycle": [
+    {
+      "stage": "Transmission and development",
+      "detail": "Waterborne cercariae from infected snails penetrate skin; adult pairs develop in venous vessels and release eggs that can reach feces."
+    },
+    {
+      "stage": "Diagnostic stages and specimen",
+      "detail": "Embryonated eggs in stool; tissue eggs may also be demonstrated."
+    }
+  ],
+  "hosts": "Definitive: humans; animal reservoirs vary by species. Intermediate: freshwater snail.",
+  "distribution": "Focal transmission in China, the Philippines and Indonesia; travel-related differential in Thailand.",
+  "clinical_significance": "Intestinal inflammation and chronic hepatosplenic disease; retained eggs drive granulomatous pathology.",
+  "clinical_tags": [
+    "Intestinal disease",
+    "Hepatobiliary disease"
+  ],
+  "specimen": "Embryonated eggs in stool; tissue eggs may also be demonstrated.",
+  "diagnostics": [
+    "Stool concentration or quantitative egg microscopy at 100–400×; low-intensity infection may need additional validated tests."
+  ],
+  "differential_diagnosis": [
+    "S. mekongi and S. japonicum eggs overlap; lateral projections may be hidden by orientation. Geography supports but does not prove identification."
+  ],
+  "aliases": [],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "species",
+  "description": "Schistosoma japonicum — Asian intestinal blood fluke. Intestinal inflammation and chronic hepatosplenic disease; retained eggs drive granulomatous pathology.",
+  "images": [
+    {
+      "file": "morphology_schematic.svg",
+      "caption": "Embryonated egg. Original educational schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0",
+      "kind": "schematic",
+      "source_basis": "Morphology fields and cited references in this Atlas entry."
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/schistosomiasis/index.html"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/schistosomiasis/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "schistosoma japonicum",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": null,
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

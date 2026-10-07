@@ -1,0 +1,258 @@
+[
+  {
+    "path": ".dockerignore",
+    "status": "modified"
+  },
+  {
+    "path": ".gitignore",
+    "status": "modified"
+  },
+  {
+    "path": "README.md",
+    "status": "modified"
+  },
+  {
+    "path": "app_pages/atlas.py",
+    "status": "modified"
+  },
+  {
+    "path": "app_pages/home.py",
+    "status": "modified"
+  },
+  {
+    "path": "component_ai/README.md",
+    "status": "modified"
+  },
+  {
+    "path": "component_ai/detection.py",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/img_classified_dataset1_cnn.json",
+    "status": "removed"
+  },
+  {
+    "path": "component_ai/img_classified_dataset1_paca.json",
+    "status": "removed"
+  },
+  {
+    "path": "component_ai/img_classified_dataset2_cnn.json",
+    "status": "removed"
+  },
+  {
+    "path": "component_ai/img_classified_dataset2_paca.json",
+    "status": "removed"
+  },
+  {
+    "path": "component_ai/img_classified_transf12_cnn.json",
+    "status": "removed"
+  },
+  {
+    "path": "component_ai/img_classified_transf12_paca.json",
+    "status": "removed"
+  },
+  {
+    "path": "component_ai/keras/README.md",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/keras/__init__.py",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/keras/img_classified_dataset1_cnn.json",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/keras/img_classified_dataset1_paca.json",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/keras/img_classified_dataset2_cnn.json",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/keras/img_classified_dataset2_paca.json",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/keras/img_classified_transf12_cnn.json",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/keras/img_classified_transf12_paca.json",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/models.py",
+    "status": "modified"
+  },
+  {
+    "path": "component_ai/rcnn/README.md",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/rcnn/__init__.py",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/rcnn/model.json",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/rcnn/weights/PLACE_WEIGHTS_HERE.txt",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/roi.py",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/yolo.py",
+    "status": "removed"
+  },
+  {
+    "path": "component_ai/yolo/README.md",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/yolo/__init__.py",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/yolo/model.json",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/yolo/service.py",
+    "status": "added"
+  },
+  {
+    "path": "component_ai/yolo/weights/PLACE_WEIGHTS_HERE.txt",
+    "status": "added"
+  },
+  {
+    "path": "component_layout/detector.py",
+    "status": "modified"
+  },
+  {
+    "path": "component_layout/viewer.py",
+    "status": "added"
+  },
+  {
+    "path": "component_layout/viewer_component/__init__.py",
+    "status": "added"
+  },
+  {
+    "path": "component_layout/viewer_component/index.html",
+    "status": "added"
+  },
+  {
+    "path": "component_layout/viewer_component/viewer.css",
+    "status": "added"
+  },
+  {
+    "path": "component_theme/styles.css",
+    "status": "modified"
+  },
+  {
+    "path": "constraints-tested.txt",
+    "status": "modified"
+  },
+  {
+    "path": "content.py",
+    "status": "modified"
+  },
+  {
+    "path": "docs/CONTENT_TEMPLATES.md",
+    "status": "modified"
+  },
+  {
+    "path": "docs/REFACTOR_NOTES.md",
+    "status": "added"
+  },
+  {
+    "path": "pages/parasites/ancylostoma_ceylanicum/content.json",
+    "status": "added"
+  },
+  {
+    "path": "pages/parasites/ascaris_lumbricoides/content.json",
+    "status": "modified"
+  },
+  {
+    "path": "pages/parasites/fasciolopsis_buski/content.json",
+    "status": "added"
+  },
+  {
+    "path": "pages/parasites/giardia_duodenalis/content.json",
+    "status": "modified"
+  },
+  {
+    "path": "pages/parasites/necator_americanus/content.json",
+    "status": "added"
+  },
+  {
+    "path": "pages/parasites/opisthorchis_viverrini/content.json",
+    "status": "modified"
+  },
+  {
+    "path": "pages/parasites/strongyloides_stercoralis/content.json",
+    "status": "added"
+  },
+  {
+    "path": "pages/parasites/taenia_spp/content.json",
+    "status": "added"
+  },
+  {
+    "path": "pages/parasites/trichuris_trichiura/content.json",
+    "status": "modified"
+  },
+  {
+    "path": "pages/parasites_quiz/ancylostoma_ceylanicum/quiz.json",
+    "status": "added"
+  },
+  {
+    "path": "pages/parasites_quiz/fasciolopsis_buski/quiz.json",
+    "status": "added"
+  },
+  {
+    "path": "pages/parasites_quiz/necator_americanus/quiz.json",
+    "status": "added"
+  },
+  {
+    "path": "pages/parasites_quiz/strongyloides_stercoralis/quiz.json",
+    "status": "added"
+  },
+  {
+    "path": "pages/parasites_quiz/taenia_spp/quiz.json",
+    "status": "added"
+  },
+  {
+    "path": "requirements-rcnn.txt",
+    "status": "added"
+  },
+  {
+    "path": "scripts/expand_content.py",
+    "status": "added"
+  },
+  {
+    "path": "scripts/seed_content.py",
+    "status": "modified"
+  },
+  {
+    "path": "tests/test_app.py",
+    "status": "modified"
+  },
+  {
+    "path": "tests/test_backends.py",
+    "status": "added"
+  },
+  {
+    "path": "tests/test_content.py",
+    "status": "modified"
+  },
+  {
+    "path": "tests/viewer_contract.cjs",
+    "status": "added"
+  }
+]

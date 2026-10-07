@@ -1,0 +1,96 @@
+{
+  "id": "hymenolepis_nana",
+  "name": "Hymenolepis nana",
+  "common_name": "Dwarf tapeworm",
+  "group": "Cestodes",
+  "taxonomy": {
+    "lineage": "Platyhelminthes > Cestoda > Hymenolepididae",
+    "genus": "Hymenolepis",
+    "scientific_name": "Hymenolepis nana",
+    "species_epithet": "nana",
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Egg: 30–50 µm, colorless, with outer membrane, inner embryophore, six-hooked embryo and polar filaments.",
+    "Adults are small intestinal tapeworms; internal autoinfection can sustain infection."
+  ],
+  "transmission": {
+    "types": [
+      "Fecal-oral",
+      "Food-borne"
+    ],
+    "detail": "Ingested embryonated eggs can complete a direct cycle through intestinal villi; an optional arthropod intermediate host can carry cysticercoids."
+  },
+  "life_cycle": [
+    {
+      "stage": "Transmission and development",
+      "detail": "Ingested embryonated eggs can complete a direct cycle through intestinal villi; an optional arthropod intermediate host can carry cysticercoids."
+    },
+    {
+      "stage": "Diagnostic stages and specimen",
+      "detail": "Embryonated eggs in stool."
+    }
+  ],
+  "hosts": "Definitive: humans and rodents. Intermediate arthropods are optional.",
+  "distribution": "Worldwide, particularly children and crowded settings; present in tropical regions.",
+  "clinical_significance": "Heavy infection can cause abdominal pain, diarrhea and reduced appetite; lighter infections may be silent.",
+  "clinical_tags": [
+    "Intestinal disease"
+  ],
+  "specimen": "Embryonated eggs in stool.",
+  "diagnostics": [
+    "Concentrated wet mount at 400× to resolve polar filaments; assess several focal planes."
+  ],
+  "differential_diagnosis": [
+    "H. diminuta eggs are larger and lack polar filaments; debris can obscure filaments in poor-quality images."
+  ],
+  "aliases": [
+    "Rodentolepis nana"
+  ],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "species",
+  "description": "Hymenolepis nana — Dwarf tapeworm. Heavy infection can cause abdominal pain, diarrhea and reduced appetite; lighter infections may be silent.",
+  "images": [
+    {
+      "file": "morphology_schematic.svg",
+      "caption": "Egg. Original educational schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0",
+      "kind": "schematic",
+      "source_basis": "Morphology fields and cited references in this Atlas entry."
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/hymenolepiasis/index.html"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/hymenolepiasis/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "hymenolepis nana",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": null,
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

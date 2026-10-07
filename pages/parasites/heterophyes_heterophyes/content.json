@@ -1,0 +1,93 @@
+{
+  "id": "heterophyes_heterophyes",
+  "name": "Heterophyes heterophyes",
+  "common_name": "Heterophyid intestinal fluke",
+  "group": "Trematodes",
+  "taxonomy": {
+    "lineage": "Platyhelminthes > Trematoda > Heterophyidae",
+    "genus": "Heterophyes",
+    "scientific_name": "Heterophyes heterophyes",
+    "species_epithet": "heterophyes",
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Egg: about 28–30 × 15–17 µm; small brown operculated egg containing a miracidium.",
+    "Adult reproductive structures support taxonomic identification when recovered."
+  ],
+  "transmission": {
+    "types": [
+      "Food-borne"
+    ],
+    "detail": "Snail stages infect fish; ingested fish metacercariae become intestinal adults."
+  },
+  "life_cycle": [
+    {
+      "stage": "Transmission and development",
+      "detail": "Snail stages infect fish; ingested fish metacercariae become intestinal adults."
+    },
+    {
+      "stage": "Diagnostic stages and specimen",
+      "detail": "Embryonated eggs in stool."
+    }
+  ],
+  "hosts": "Definitive: humans, cats, dogs and other fish-eating animals. Intermediate: snail then freshwater or brackish-water fish.",
+  "distribution": "Foci in the Middle East and parts of Asia; confirm the actual exposure region instead of assuming Thai endemicity.",
+  "clinical_significance": "Abdominal pain and diarrhea; rare extraintestinal complications have been linked to egg migration.",
+  "clinical_tags": [
+    "Intestinal disease"
+  ],
+  "specimen": "Embryonated eggs in stool.",
+  "diagnostics": [
+    "Concentrated stool wet mounts at 400×; species confirmation may need adults or molecular methods."
+  ],
+  "differential_diagnosis": [
+    "Eggs are difficult to separate from Metagonimus and other small operculated flukes."
+  ],
+  "aliases": [],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "species",
+  "description": "Heterophyes heterophyes — Heterophyid intestinal fluke. Abdominal pain and diarrhea; rare extraintestinal complications have been linked to egg migration.",
+  "images": [
+    {
+      "file": "morphology_schematic.svg",
+      "caption": "Small operculated egg. Original educational schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0",
+      "kind": "schematic",
+      "source_basis": "Morphology fields and cited references in this Atlas entry."
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/heterophyiasis/index.html"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/heterophyiasis/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "heterophyes heterophyes",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": "minute_intestinal_flukes",
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

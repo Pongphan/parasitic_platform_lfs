@@ -1,0 +1,95 @@
+{
+  "id": "dientamoeba_fragilis",
+  "name": "Dientamoeba fragilis",
+  "common_name": "Dientamoeba intestinal protist",
+  "group": "Protozoa",
+  "taxonomy": {
+    "lineage": "Metamonada > Parabasalia (lineage)",
+    "genus": "Dientamoeba",
+    "scientific_name": "Dientamoeba fragilis",
+    "species_epithet": "fragilis",
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Trophozoite: approximately 5–15 µm, usually two nuclei, fragmented karyosomal chromatin and no peripheral nuclear chromatin.",
+    "One-nucleated forms occur; cyst-like forms are not the usual routine diagnostic target."
+  ],
+  "transmission": {
+    "types": [
+      "Uncertain"
+    ],
+    "detail": "Intestinal colonization and fecal shedding are established; transmission remains incompletely understood and should not be represented as a proven single route."
+  },
+  "life_cycle": [
+    {
+      "stage": "Transmission and development",
+      "detail": "Intestinal colonization and fecal shedding are established; transmission remains incompletely understood and should not be represented as a proven single route."
+    },
+    {
+      "stage": "Diagnostic stages and specimen",
+      "detail": "Trophozoites in appropriately preserved stool."
+    }
+  ],
+  "hosts": "Humans are the main clinical host; animal findings exist. No established intermediate host.",
+  "distribution": "Worldwide; detection rates depend strongly on laboratory methods.",
+  "clinical_significance": "Associated with gastrointestinal symptoms in some patients, but asymptomatic carriage occurs and causal interpretation needs context.",
+  "clinical_tags": [
+    "Intestinal disease",
+    "Variable pathogenicity"
+  ],
+  "specimen": "Trophozoites in appropriately preserved stool.",
+  "diagnostics": [
+    "Permanent trichrome or iron-hematoxylin stains around 1000×; molecular assays improve detection.",
+    "Delayed fixation can degrade diagnostic nuclear features."
+  ],
+  "differential_diagnosis": [
+    "Small amoebae and degenerating cells can resemble trophozoites; evaluate nuclei in well-preserved stained material."
+  ],
+  "aliases": [],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "species",
+  "description": "Dientamoeba fragilis — Dientamoeba intestinal protist. Associated with gastrointestinal symptoms in some patients, but asymptomatic carriage occurs and causal interpretation needs context.",
+  "images": [
+    {
+      "file": "morphology_schematic.svg",
+      "caption": "Binucleate trophozoite. Original educational schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0",
+      "kind": "schematic",
+      "source_basis": "Morphology fields and cited references in this Atlas entry."
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/dientamoeba/index.html"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/dientamoeba/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "dientamoeba fragilis",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": null,
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

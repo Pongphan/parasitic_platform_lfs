@@ -1,0 +1,100 @@
+{
+  "id": "entamoeba_histolytica_complex",
+  "name": "Entamoeba histolytica complex",
+  "common_name": "Morphologically similar intestinal amoebae",
+  "group": "Protozoa",
+  "taxonomy": {
+    "lineage": "Amoebozoa > Archamoebae > Entamoeba (lineage)",
+    "genus": "Entamoeba",
+    "scientific_name": "Entamoeba histolytica complex",
+    "species_epithet": null,
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Cyst: usually 10–20 µm, up to four nuclei, fine peripheral chromatin and a small karyosome; chromatoid bodies may have rounded ends.",
+    "Trophozoites commonly 15–20 µm but range more widely; ingested erythrocytes support invasive E. histolytica but are not an absolute species rule."
+  ],
+  "transmission": {
+    "types": [
+      "Fecal-oral"
+    ],
+    "detail": "Mature cysts are ingested; trophozoites colonize the large intestine. E. histolytica can invade tissue and spread to the liver."
+  },
+  "life_cycle": [
+    {
+      "stage": "Transmission and development",
+      "detail": "Mature cysts are ingested; trophozoites colonize the large intestine. E. histolytica can invade tissue and spread to the liver."
+    },
+    {
+      "stage": "Diagnostic stages and specimen",
+      "detail": "Cysts or trophozoites in stool; tissue or aspirate findings belong to a distinct specimen category."
+    }
+  ],
+  "hosts": "Humans are the principal clinical host; no intermediate host.",
+  "distribution": "Worldwide, especially settings with fecal contamination; relevant throughout Southeast Asia.",
+  "clinical_significance": "E. histolytica causes amoebic colitis and liver abscess. An unresolved complex is not a diagnosis of invasive amebiasis; morphologically similar organisms require different interpretation.",
+  "clinical_tags": [
+    "Intestinal disease",
+    "Hepatobiliary disease"
+  ],
+  "specimen": "Cysts or trophozoites in stool; tissue or aspirate findings belong to a distinct specimen category.",
+  "diagnostics": [
+    "Permanent stained smears near 1000× show nuclear features; iodine aids cyst assessment.",
+    "Species-specific antigen or molecular tests are needed to resolve the complex."
+  ],
+  "differential_diagnosis": [
+    "E. histolytica, E. dispar and E. moshkovskii cannot reliably be separated by routine microscopy.",
+    "Compare mature nuclear count with E. coli and use calibrated size for small amoebae."
+  ],
+  "aliases": [
+    "Entamoeba histolytica",
+    "Entamoeba dispar",
+    "Entamoeba moshkovskii"
+  ],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "reference_group",
+  "description": "Entamoeba histolytica complex — Morphologically similar intestinal amoebae. E. histolytica causes amoebic colitis and liver abscess. An unresolved complex is not a diagnosis of invasive amebiasis; morphologically similar organisms require different interpretation.",
+  "images": [
+    {
+      "file": "morphology_schematic.svg",
+      "caption": "Four-nucleated cyst. Original educational schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0",
+      "kind": "schematic",
+      "source_basis": "Morphology fields and cited references in this Atlas entry."
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/amebiasis/index.html"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/amebiasis/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "entamoeba histolytica complex",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": null,
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

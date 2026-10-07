@@ -1,0 +1,104 @@
+{
+  "id": "fasciolopsis_buski",
+  "name": "Fasciolopsis buski",
+  "common_name": "Giant intestinal fluke",
+  "group": "Trematodes",
+  "taxonomy": {
+    "lineage": "Platyhelminthes > Trematoda > Fasciolidae",
+    "genus": "Fasciolopsis",
+    "scientific_name": "Fasciolopsis buski",
+    "species_epithet": "buski",
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Egg: approximately 130–150 × 60–90 µm; large oval, yellow-brown, thin shell, subtle operculum, unembryonated when passed.",
+    "Large leaf-shaped adults inhabit the intestine."
+  ],
+  "transmission": {
+    "types": [
+      "Food-borne"
+    ],
+    "detail": "Eggs develop in water and infect snails; cercariae encyst on aquatic vegetation. Ingested metacercariae mature in the intestine."
+  },
+  "life_cycle": [
+    {
+      "stage": "Water",
+      "detail": "Eggs embryonate and release miracidia."
+    },
+    {
+      "stage": "Snail",
+      "detail": "Larval stages develop in a snail."
+    },
+    {
+      "stage": "Plants",
+      "detail": "Cercariae encyst on aquatic vegetation."
+    },
+    {
+      "stage": "Intestine",
+      "detail": "Ingested metacercariae mature into intestinal adults."
+    }
+  ],
+  "hosts": "Definitive: humans and pigs. Intermediate: freshwater snail; aquatic plants carry metacercariae.",
+  "distribution": "Focal distribution in Asia, including parts of Southeast Asia; exposure to contaminated aquatic plants is relevant.",
+  "clinical_significance": "Heavy infection can cause diarrhea, malabsorption, edema and intestinal obstruction.",
+  "clinical_tags": [
+    "Intestinal disease",
+    "Malabsorption"
+  ],
+  "specimen": "Unembryonated operculated eggs in stool.",
+  "diagnostics": [
+    "Stool wet mount/concentration; 100× overview and 400× shell detail."
+  ],
+  "differential_diagnosis": [
+    "Eggs strongly resemble Fasciola; intestinal versus hepatic disease cannot be inferred from an ambiguous egg alone."
+  ],
+  "aliases": [],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "species",
+  "description": "Fasciolopsis buski — Giant intestinal fluke. Heavy infection can cause diarrhea, malabsorption, edema and intestinal obstruction.",
+  "images": [
+    {
+      "file": "morphology.svg",
+      "caption": "Original schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0"
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/fasciolopsiasis/index.html"
+    },
+    {
+      "title": "Fasciolopsis buski in an endemic Thai community",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/12466749/"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/fasciolopsiasis/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "fasciolopsis buski",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": null,
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

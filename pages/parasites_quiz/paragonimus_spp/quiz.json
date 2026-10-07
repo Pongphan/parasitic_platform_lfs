@@ -1,0 +1,23 @@
+{
+  "species_id": "paragonimus_spp",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Paragonimus spp.?",
+      "options": [
+        "Eggs in sputum or swallowed eggs in stool; specimen origin must accompany image labels.",
+        "Microfilariae in a peripheral blood film.",
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 0,
+      "explanation": "Eggs in sputum or swallowed eggs in stool; specimen origin must accompany image labels. Microscopy of sputum and stool at 100–400×; serology can assist when eggs are absent.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/paragonimiasis/index.html"
+        }
+      ]
+    }
+  ]
+}

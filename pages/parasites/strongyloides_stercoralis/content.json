@@ -1,0 +1,101 @@
+{
+  "id": "strongyloides_stercoralis",
+  "name": "Strongyloides stercoralis",
+  "common_name": "Intestinal threadworm",
+  "group": "Nematodes",
+  "taxonomy": {
+    "lineage": "Nematoda > Chromadorea > Strongyloididae",
+    "genus": "Strongyloides",
+    "scientific_name": "Strongyloides stercoralis",
+    "species_epithet": "stercoralis",
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Rhabditiform larva: roughly 180–380 µm, short buccal cavity and prominent genital primordium.",
+    "Filariform larva: up to about 600 µm, long esophagus and notched tail; eggs usually hatch before passage and are not the usual stool target."
+  ],
+  "transmission": {
+    "types": [
+      "Skin penetration"
+    ],
+    "detail": "Soil-derived L3 enter skin; intestinal females produce offspring that may exit or initiate autoinfection. A free-living generation can occur outside the host."
+  },
+  "life_cycle": [
+    {
+      "stage": "Soil",
+      "detail": "Larvae develop through direct or free-living pathways."
+    },
+    {
+      "stage": "Skin",
+      "detail": "Filariform larvae penetrate skin."
+    },
+    {
+      "stage": "Intestine",
+      "detail": "Parasitic females produce eggs that hatch."
+    },
+    {
+      "stage": "Persistence",
+      "detail": "Larvae leave in stool or participate in autoinfection."
+    }
+  ],
+  "hosts": "Parasitic definitive host: humans; animal-associated lineages also occur. No intermediate host.",
+  "distribution": "Tropical and subtropical regions including Southeast Asia; persistent infection may remain after leaving an endemic area.",
+  "clinical_significance": "Can cause abdominal symptoms, diarrhea and skin manifestations; immunosuppression, especially corticosteroids, can precipitate hyperinfection or dissemination.",
+  "clinical_tags": [
+    "Intestinal disease",
+    "Immunocompromised risk"
+  ],
+  "specimen": "Rhabditiform larvae in stool; larvae in respiratory material may occur in hyperinfection.",
+  "diagnostics": [
+    "Stool larval concentration, Baermann or agar-plate methods in equipped laboratories; serology or molecular testing can complement microscopy.",
+    "Use 100× overview and 400× head/tail detail."
+  ],
+  "differential_diagnosis": [
+    "Hookworm rhabditiform larvae have a longer buccal cavity and less conspicuous genital primordium. A cropped midbody alone is insufficient."
+  ],
+  "aliases": [],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "species",
+  "description": "Strongyloides stercoralis — Intestinal threadworm. Can cause abdominal symptoms, diarrhea and skin manifestations; immunosuppression, especially corticosteroids, can precipitate hyperinfection or dissemination.",
+  "images": [
+    {
+      "file": "morphology.svg",
+      "caption": "Original schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0"
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/strongyloidiasis/index.html"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/strongyloidiasis/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "strongyloides stercoralis",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": null,
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

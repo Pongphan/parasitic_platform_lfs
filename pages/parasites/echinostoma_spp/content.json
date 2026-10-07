@@ -1,0 +1,94 @@
+{
+  "id": "echinostoma_spp",
+  "name": "Echinostoma spp.",
+  "common_name": "Echinostome intestinal flukes",
+  "group": "Trematodes",
+  "taxonomy": {
+    "lineage": "Platyhelminthes > Trematoda > Echinostomatidae",
+    "genus": "Echinostoma",
+    "scientific_name": "Echinostoma spp.",
+    "species_epithet": null,
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Egg: approximately 80–135 × 55–80 µm across described echinostomes; yellow-brown with a subtle operculum and sometimes abopercular thickening.",
+    "Adults have a collar of spines; this genus-level card is not a universal species key."
+  ],
+  "transmission": {
+    "types": [
+      "Food-borne"
+    ],
+    "detail": "Snail development is followed by encystment in a second intermediate host; eating infected aquatic hosts introduces intestinal adults."
+  },
+  "life_cycle": [
+    {
+      "stage": "Transmission and development",
+      "detail": "Snail development is followed by encystment in a second intermediate host; eating infected aquatic hosts introduces intestinal adults."
+    },
+    {
+      "stage": "Diagnostic stages and specimen",
+      "detail": "Unembryonated operculated eggs in stool."
+    }
+  ],
+  "hosts": "Definitive: mammals or birds depending on species. Intermediate: snail first; snails, other mollusks, fish or amphibians may follow.",
+  "distribution": "Asian foci including Thailand; host and species distributions differ.",
+  "clinical_significance": "Intestinal inflammation, diarrhea and abdominal pain; heavier infections may contribute to anemia.",
+  "clinical_tags": [
+    "Intestinal disease",
+    "Anemia"
+  ],
+  "specimen": "Unembryonated operculated eggs in stool.",
+  "diagnostics": [
+    "Wet mounts and concentration at 100–400×; adult or molecular identification improves species certainty."
+  ],
+  "differential_diagnosis": [
+    "Large operculated eggs overlap Fasciola and Fasciolopsis; collar spines are an adult feature, not an egg feature."
+  ],
+  "aliases": [],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "reference_group",
+  "description": "Echinostoma spp. — Echinostome intestinal flukes. Intestinal inflammation, diarrhea and abdominal pain; heavier infections may contribute to anemia.",
+  "images": [
+    {
+      "file": "morphology_schematic.svg",
+      "caption": "Operculated egg. Original educational schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0",
+      "kind": "schematic",
+      "source_basis": "Morphology fields and cited references in this Atlas entry."
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/echinostomiasis/index.html"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/echinostomiasis/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "echinostoma spp",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": null,
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

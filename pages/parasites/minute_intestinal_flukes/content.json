@@ -1,0 +1,104 @@
+{
+  "id": "minute_intestinal_flukes",
+  "name": "Minute intestinal flukes (MIF)",
+  "common_name": "Small intestinal fluke egg group",
+  "group": "Trematodes",
+  "taxonomy": {
+    "lineage": "Platyhelminthes > Trematoda; several genera, especially Heterophyidae",
+    "genus": null,
+    "scientific_name": "Minute intestinal flukes (MIF)",
+    "species_epithet": null,
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Egg group: small yellow-brown, operculated, usually embryonated eggs; dimensions vary by genus and overlap liver-fluke eggs.",
+    "Heterophyes eggs are about 28–30 × 15–17 µm; a group label must not imply a single fixed size or species."
+  ],
+  "transmission": {
+    "types": [
+      "Food-borne"
+    ],
+    "detail": "Typical fish-borne members develop through snail and fish hosts. Metacercariae are ingested with fish and adults release eggs from the intestine."
+  },
+  "life_cycle": [
+    {
+      "stage": "Transmission and development",
+      "detail": "Typical fish-borne members develop through snail and fish hosts. Metacercariae are ingested with fish and adults release eggs from the intestine."
+    },
+    {
+      "stage": "Diagnostic stages and specimen",
+      "detail": "Small operculated eggs in stool; species identity may require molecular or adult-worm evidence."
+    }
+  ],
+  "hosts": "Definitive: humans and other fish-eating vertebrates, depending on species. Intermediate: snail then fish for common heterophyids.",
+  "distribution": "Several members occur in Southeast Asia; species composition varies locally, including Thai communities.",
+  "clinical_significance": "Often mild; intestinal infection can produce abdominal pain and diarrhea. The group encompasses species with different clinical behavior.",
+  "clinical_tags": [
+    "Intestinal disease"
+  ],
+  "specimen": "Small operculated eggs in stool; species identity may require molecular or adult-worm evidence.",
+  "diagnostics": [
+    "Concentrated stool wet mounts at about 400×; record size using calibrated optics.",
+    "Where mixed infections occur, a stool PCR result does not identify every individual egg in its images."
+  ],
+  "differential_diagnosis": [
+    "OV, Clonorchis and MIF eggs can overlap substantially.",
+    "Use MIF egg as a morphology-group target; do not automatically relabel detections as Haplorchis taichui."
+  ],
+  "aliases": [
+    "MIF",
+    "MIF egg"
+  ],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "reference_group",
+  "description": "Minute intestinal flukes (MIF) — Small intestinal fluke egg group. Often mild; intestinal infection can produce abdominal pain and diarrhea. The group encompasses species with different clinical behavior.",
+  "images": [
+    {
+      "file": "morphology_schematic.svg",
+      "caption": "Small operculated egg. Original educational schematic — not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0",
+      "kind": "schematic",
+      "source_basis": "Morphology fields and cited references in this Atlas entry."
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/heterophyiasis/index.html"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/heterophyiasis/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "minute intestinal flukes",
+  "classifier_labels": [
+    "Minute intestinal fluke egg"
+  ],
+  "model_mapping": {
+    "exact_labels": [
+      "Minute intestinal fluke egg"
+    ],
+    "related_atlas_id": null,
+    "status": "Configured label match",
+    "note": "Configured labels link to this reference; they do not validate species identity or model performance.",
+    "configured_detector_aliases": [
+      "class_2"
+    ]
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

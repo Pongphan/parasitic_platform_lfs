@@ -1,0 +1,23 @@
+{
+  "species_id": "trichostrongylus_spp",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Trichostrongylus spp.?",
+      "options": [
+        "Microfilariae in a peripheral blood film.",
+        "Cleavage-stage eggs in stool.",
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 1,
+      "explanation": "Cleavage-stage eggs in stool. Concentration and calibrated wet mounts at 100–400×; larval or molecular work may be needed for confirmation.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/trichostrongylosis/index.html"
+        }
+      ]
+    }
+  ]
+}

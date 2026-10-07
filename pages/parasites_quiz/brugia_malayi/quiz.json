@@ -1,0 +1,27 @@
+{
+  "species_id": "brugia_malayi",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Brugia malayi?",
+      "options": [
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen.",
+        "Operculated fluke eggs in a stool wet mount.",
+        "Microfilariae in peripheral blood; collect with local periodicity and laboratory guidance in mind.",
+        "Giardia cysts with four nuclei in a stool preparation."
+      ],
+      "correct_answer": 2,
+      "explanation": "Microfilariae in peripheral blood; collect with local periodicity and laboratory guidance in mind. Stained blood films or concentration; inspect full head/tail and use molecular support where needed.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/lymphaticfilariasis/index.html"
+        },
+        {
+          "title": "WHO: lymphatic filariasis elimination in Thailand",
+          "url": "https://www.who.int/southeastasia/activities/elimination-of-lymphatic-filariasis-as-a-public-health-problem-in-thailand"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "species_id": "capillaria_philippinensis",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Capillaria philippinensis?",
+      "options": [
+        "Eggs, larvae or adult fragments in stool.",
+        "Microfilariae in a peripheral blood film.",
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 0,
+      "explanation": "Eggs, larvae or adult fragments in stool. Repeated stool microscopy may be required; 400× helps resolve striations and polar plugs.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/intestinalcapillariasis/index.html"
+        }
+      ]
+    }
+  ]
+}

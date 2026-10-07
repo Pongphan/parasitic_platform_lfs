@@ -1,0 +1,3 @@
+Place your trained Ultralytics detection weights here as parasite_yolo11.pt.
+This text file is a placeholder, not model weights. No dummy predictions run.
+See ../README.md for the supported training/export contract.

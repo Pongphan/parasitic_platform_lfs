@@ -1,0 +1,23 @@
+{
+  "species_id": "babesia_spp",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Babesia spp.?",
+      "options": [
+        "Operculated fluke eggs in a stool wet mount.",
+        "Parasites in peripheral blood erythrocytes.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen.",
+        "Giardia cysts with four nuclei in a stool preparation."
+      ],
+      "correct_answer": 1,
+      "explanation": "Parasites in peripheral blood erythrocytes. Giemsa thin films near 1000× with molecular confirmation; interpret parasitemia through validated laboratory procedures.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/babesiosis/index.html"
+        }
+      ]
+    }
+  ]
+}

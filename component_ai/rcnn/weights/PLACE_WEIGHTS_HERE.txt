@@ -1,0 +1,3 @@
+Place a trained torchvision Faster R-CNN state_dict here as parasite_fasterrcnn.pth.
+Set ../model.json labels and architecture to match training. Index zero is background.
+This text file is not a model and is never passed to the loader.

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "species_id": "fasciolopsis_buski",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Which exposure transmits infection?",
+      "options": [
+        "Aquatic plants with metacercariae",
+        "Mosquito bite",
+        "Undercooked beef"
+      ],
+      "correct_answer": 0,
+      "explanation": "Metacercariae encyst on aquatic plants."
+    },
+    {
+      "id": "q2",
+      "question": "Where do adults live?",
+      "options": [
+        "Bile ducts",
+        "Intestine",
+        "Blood cells"
+      ],
+      "correct_answer": 1,
+      "explanation": "F. buski is an intestinal fluke."
+    },
+    {
+      "id": "q3",
+      "question": "Which egg resembles F. buski?",
+      "options": [
+        "Taenia",
+        "Trichuris",
+        "Fasciola"
+      ],
+      "correct_answer": 2,
+      "explanation": "These large operculated eggs can be indistinguishable."
+    }
+  ]
+}

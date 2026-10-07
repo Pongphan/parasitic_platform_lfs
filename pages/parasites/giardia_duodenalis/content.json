@@ -1,0 +1,105 @@
+{
+  "id": "giardia_duodenalis",
+  "name": "Giardia duodenalis",
+  "common_name": "Giardia intestinal flagellate",
+  "group": "Protozoa",
+  "taxonomy": {
+    "lineage": "Metamonada > Fornicata > Diplomonadida (lineage)",
+    "genus": "Giardia",
+    "scientific_name": "Giardia duodenalis",
+    "species_epithet": "duodenalis",
+    "rank_note": "Reference groups can include multiple species. Protozoan higher-rank systems differ; the lineage is provided without forcing every clade into a class rank."
+  },
+  "morphology": [
+    "Cyst: about 8–19 µm long, oval, with two nuclei when immature and four when mature; axonemes and median bodies may be visible.",
+    "Trophozoite: 10–20 µm, pear-shaped, with two nuclei, a ventral attachment disk and eight flagella."
+  ],
+  "transmission": {
+    "types": [
+      "Fecal-oral"
+    ],
+    "detail": "Ingested cysts excyst in the small intestine; trophozoites multiply and attach to mucosa, then encyst before fecal passage."
+  },
+  "life_cycle": [
+    {
+      "stage": "Cyst ingestion",
+      "detail": "A host ingests cysts through fecal–oral exposure."
+    },
+    {
+      "stage": "Excystation",
+      "detail": "Cysts release trophozoites in the small intestine."
+    },
+    {
+      "stage": "Multiplication",
+      "detail": "Trophozoites multiply by binary fission."
+    },
+    {
+      "stage": "Encystation",
+      "detail": "Cysts form during intestinal transit and pass in stool, enabling transmission."
+    }
+  ],
+  "hosts": "Humans and other mammals; assemblages differ in host association. No intermediate host.",
+  "distribution": "Worldwide, including Thailand; water, food and close-contact transmission are relevant.",
+  "clinical_significance": "Diarrhea, bloating, steatorrhea and malabsorption; asymptomatic carriage occurs.",
+  "clinical_tags": [
+    "Intestinal disease",
+    "Malabsorption"
+  ],
+  "specimen": "Cysts and trophozoites in stool; trophozoites are more often found in loose specimens.",
+  "diagnostics": [
+    "Fresh saline mounts demonstrate motility; iodine highlights cyst structures.",
+    "Permanent trichrome or iron-hematoxylin smears near 1000× reveal nuclei; antigen or molecular assays can supplement microscopy."
+  ],
+  "differential_diagnosis": [
+    "Assemblages cannot be inferred from morphology.",
+    "Preserve cyst/trophozoite and stain labels; yeast lacks the characteristic paired nuclei and internal fibrils."
+  ],
+  "aliases": [
+    "Giardia lamblia",
+    "Giardia intestinalis"
+  ],
+  "schema_version": 2,
+  "language": "en",
+  "translations": {},
+  "reviewed_on": "2026-09-08",
+  "review_status": "Source-compiled educational content; not independently clinically validated",
+  "entry_type": "species",
+  "description": "Giardia duodenalis — Giardia intestinal flagellate. Diarrhea, bloating, steatorrhea and malabsorption; asymptomatic carriage occurs.",
+  "images": [
+    {
+      "file": "morphology.svg",
+      "caption": "Original schematic of a cyst or egg · not to scale; not a microscopy image.",
+      "credit": "Parasitic Platform 2027",
+      "license": "CC0-1.0"
+    }
+  ],
+  "references": [
+    {
+      "title": "Primary reference and microscopy examples",
+      "url": "https://www.cdc.gov/dpdx/giardiasis/index.html"
+    }
+  ],
+  "reference_images": [
+    {
+      "url": "https://www.cdc.gov/dpdx/giardiasis/index.html",
+      "caption": "External reference gallery; verify species, stage and preparation in the original caption.",
+      "kind": "external_reference",
+      "rights": "Check individual source attribution and reuse terms before dataset use."
+    }
+  ],
+  "classification_label": "giardia duodenalis",
+  "classifier_labels": [],
+  "model_mapping": {
+    "exact_labels": [],
+    "related_atlas_id": null,
+    "status": "Reference only",
+    "note": "Adding this reference does not add a trained class. Species-level targets need independently verified annotations and a compatible model contract.",
+    "configured_detector_aliases": []
+  },
+  "annotation_guidance": [
+    "Record specimen, stage, stain, objective/total magnification, pixel calibration, source image and reviewer certainty.",
+    "Native crops of 200–650 pixels do not determine biological size. Retain µm-per-pixel calibration before resizing.",
+    "Split training, validation and test data by patient/specimen; keep related crops in the same split.",
+    "Keep damaged or ambiguous objects uncertain. Molecular confirmation of a mixed specimen does not assign every pictured object a species."
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "species_id": "taenia_solium",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Taenia solium?",
+      "options": [
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Microfilariae in a peripheral blood film.",
+        "Eggs or proglottids in stool for taeniasis; tissue disease requires a different diagnostic workup.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 2,
+      "explanation": "Eggs or proglottids in stool for taeniasis; tissue disease requires a different diagnostic workup. Stool microscopy at 100–400× detects Taenia-type eggs.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/taeniasis/index.html"
+        }
+      ]
+    }
+  ]
+}

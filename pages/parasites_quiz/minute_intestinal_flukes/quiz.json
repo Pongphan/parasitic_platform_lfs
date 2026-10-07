@@ -1,0 +1,23 @@
+{
+  "species_id": "minute_intestinal_flukes",
+  "questions": [
+    {
+      "id": "diagnostic_stage",
+      "question": "Which specimen or diagnostic finding belongs in a reference record for Minute intestinal flukes (MIF)?",
+      "options": [
+        "Microfilariae in a peripheral blood film.",
+        "Small operculated eggs in stool; species identity may require molecular or adult-worm evidence.",
+        "Malaria rings inside erythrocytes in a thin blood film.",
+        "Asymmetrical pinworm eggs on a perianal adhesive-tape specimen."
+      ],
+      "correct_answer": 1,
+      "explanation": "Small operculated eggs in stool; species identity may require molecular or adult-worm evidence. Concentrated stool wet mounts at about 400×; record size using calibrated optics.",
+      "references": [
+        {
+          "title": "Primary reference and microscopy examples",
+          "url": "https://www.cdc.gov/dpdx/heterophyiasis/index.html"
+        }
+      ]
+    }
+  ]
+}

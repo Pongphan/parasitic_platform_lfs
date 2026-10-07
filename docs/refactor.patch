@@ -1,0 +1,3094 @@
+--- a/README.md
++++ b/README.md
+@@ -3,6 +3,11 @@
+ A modular Streamlit learning and microscopy application with five pages,
+ shared card navigation directly below the title, and no sidebar. Sage, coral,
+ and muted teal surfaces use dark text and a centralized native theme plus CSS.
++
++The current refactor restores the 2026 pan/zoom/Calculate viewer, provides nine
++Atlas entries and 27 questions, and separates Keras, YOLO and Faster R-CNN assets.
++See [page-by-page changes and verification](docs/REFACTOR_NOTES.md) and the
++[complete file-labeled code diff](docs/refactor.patch).
+ 
+ ## Run locally
+ 
+@@ -20,9 +25,10 @@
+ 
+ `requirements.txt` alone supports the learning pages and detector UI without
+ TensorFlow. `requirements-ai.txt` enables Keras; `requirements-yolo.txt` enables
+-the optional YOLO path. Six real Keras models and eight real TIFF samples were
+-copied from the 2026 project. No parasite YOLO weights were present, so that
+-mode explains setup and disables inference until weights are installed.
++the optional YOLO path; `requirements-rcnn.txt` enables Faster R-CNN. Six real
++Keras models and eight real TIFF samples were copied from the 2026 project.
++YOLO and Faster R-CNN have no supplied trained weights, so both explain their
++drop-in setup and disable inference until the expected files are installed.
+ 
+ Always launch from this directory so Streamlit loads `.streamlit/config.toml`
+ and its relative `component_theme/theme.toml`. All data/model paths are resolved
+@@ -38,6 +44,7 @@
+ ├── requirements.txt
+ ├── requirements-ai.txt
+ ├── requirements-yolo.txt
++├── requirements-rcnn.txt
+ ├── requirements-dev.txt
+ ├── constraints-tested.txt
+ ├── Dockerfile
+@@ -46,7 +53,9 @@
+ ├── .streamlit/config.toml
+ ├── component_layout/
+ │   ├── __init__.py                # Header, reusable card navigation, hero, footer
+-│   └── detector.py                # Detector UI and session/report lifecycle
++│   ├── detector.py                # Detector UI and session/report lifecycle
++│   ├── viewer.py                  # Validated 2026 viewer adapter
++│   └── viewer_component/{__init__.py,index.html,viewer.css}
+ ├── component_theme/
+ │   ├── __init__.py                # Theme application and chart tokens
+ │   ├── theme.toml                 # Native widgets, palette and typography
+@@ -55,14 +64,24 @@
+ │   ├── __init__.py
+ │   ├── images.py                  # Decode limits and source-coordinate crops
+ │   ├── models.py                  # Cached loading, preprocessing and ensemble
+-│   ├── yolo.py                    # Optional full-image detector and annotation
++│   ├── roi.py                     # Original center-cell coordinate mapping
++│   ├── detection.py               # Validated YOLO / RCNN manifests
+ │   ├── README.md
+-│   ├── img_classified_dataset1_cnn.{keras,json}
+-│   ├── img_classified_dataset1_paca.{keras,json}
+-│   ├── img_classified_dataset2_cnn.{keras,json}
+-│   ├── img_classified_dataset2_paca.{keras,json}
+-│   ├── img_classified_transf12_cnn.{keras,json}
+-│   └── img_classified_transf12_paca.{keras,json}
++│   ├── keras/
++│   │   ├── __init__.py
++│   │   ├── README.md
++│   │   └── [6 unchanged .keras weights + 6 sibling JSON contracts]
++│   ├── yolo/
++│   │   ├── __init__.py
++│   │   ├── service.py
++│   │   ├── model.json
++│   │   ├── README.md
++│   │   └── weights/PLACE_WEIGHTS_HERE.txt
++│   └── rcnn/
++│       ├── __init__.py
++│       ├── model.json
++│       ├── README.md
++│       └── weights/PLACE_WEIGHTS_HERE.txt
+ ├── component_aiimage/
+ │   ├── README.md
+ │   └── [8 TIFF microscopy images]
+@@ -77,19 +96,34 @@
+ │   │   ├── opisthorchis_viverrini/{content.json,morphology.svg}
+ │   │   ├── ascaris_lumbricoides/{content.json,morphology.svg}
+ │   │   ├── giardia_duodenalis/{content.json,morphology.svg}
++│   │   ├── necator_americanus/{content.json,morphology.svg}
++│   │   ├── ancylostoma_ceylanicum/{content.json,morphology.svg}
++│   │   ├── taenia_spp/{content.json,morphology.svg}
++│   │   ├── fasciolopsis_buski/{content.json,morphology.svg}
++│   │   ├── strongyloides_stercoralis/{content.json,morphology.svg}
+ │   │   └── trichuris_trichiura/{content.json,morphology.svg}
+ │   └── parasites_quiz/
+ │       ├── opisthorchis_viverrini/quiz.json
+ │       ├── ascaris_lumbricoides/quiz.json
+ │       ├── giardia_duodenalis/quiz.json
++│       ├── necator_americanus/quiz.json
++│       ├── ancylostoma_ceylanicum/quiz.json
++│       ├── taenia_spp/quiz.json
++│       ├── fasciolopsis_buski/quiz.json
++│       ├── strongyloides_stercoralis/quiz.json
+ │       └── trichuris_trichiura/quiz.json
+ ├── scripts/seed_content.py         # Rebuild original bundled JSON/illustrations
++├── scripts/expand_content.py       # Add new entries without overwriting content
+ ├── docs/CONTENT_TEMPLATES.md
++├── docs/REFACTOR_NOTES.md
++├── docs/refactor.patch
+ └── tests/
+     ├── conftest.py
+     ├── test_app.py
+     ├── test_content.py
+-    └── test_inference.py
++    ├── test_inference.py
++    ├── test_backends.py
++    └── viewer_contract.cjs
+ ```
+ 
+ `st.navigation(position="hidden")` registers pages explicitly and disables legacy
+@@ -107,29 +141,42 @@
+ float32 → predict → per-model scores → normalized mean and majority vote.
+ Raw 0–255 input and Pillow bicubic resizing preserve the legacy preprocessing.
+ 
+-The old viewer's browser-dependent center-grid/zoom/pan crop is replaced by
+-explicit source-pixel crop bounds with an outlined source preview and the exact
+-analyzed crop. This permits arbitrary regions and avoids browser-coordinate
+-ambiguity. It does not reproduce the old viewer's pan/zoom gestures.
++The 2026 interactive viewer and center-grid crop mapping are now reused directly.
++Drag the image to pan, use wheel/buttons/keyboard to zoom, align a target with the
++center box, then click Calculate. There are no horizontal/vertical crop sliders
++or region-method selection bar. A model-family dropdown selects either the Keras
++classifier or a full-image detector. The existing v1 iframe protocol is retained
++to match the explicitly requested 2026 component rather than replacing its
++interaction model. No additional browser component library is required.
++
++Each Calculate event includes an image identity and unique token. The adapter
++rejects stale/invalid events and entirely off-image regions. A repeated token
++does not run inference twice. Viewer movements stay in the browser; displayed
++results are labeled snapshots of the last Calculate action, and the viewer
++indicates when a new calculation is needed. The legacy fixed center cell is
++preserved: this is not a freehand or resizable rectangle selection tool.
+ 
+ Changes include lazy TensorFlow imports, safe inference-only loading, bounded
+ version-aware caches, per-model locks, strict class/input/output contracts,
+ independent failure handling, explicit vote ties, SHA-256 model/image provenance,
+ and JSON reports. Image source selection prevents an existing upload from
+-silently overriding a sample. Changing image, crop, selected models, contracts,
+-weights, mode, or confidence threshold suppresses stale results.
++silently overriding a sample. Changing the calculated crop, image, selected
++models, contracts, weights, mode or confidence threshold invalidates results.
+ 
+ The YOLO implementation preserves existing detection and annotation logic.
+ It now passes a PIL RGB image to Ultralytics: numpy image sources are interpreted
+ as BGR, which could reverse channels in the old code. No YOLO weights were
+-supplied, so real YOLO inference cannot yet be validated.
++supplied, so real YOLO inference cannot yet be validated. Faster R-CNN supports
++torchvision ResNet50-FPN v1/v2 state dictionaries with a matching class manifest,
++strict safe loading, CPU inference, class-aware NMS, annotation and JSON export.
++No pretrained weights are downloaded by either scaffold.
+ 
+ ## Content and scope
+ 
+-Four Atlas species contain descriptions, morphology, four-step life cycles,
++Nine Atlas entries (including a Taenia species group) contain descriptions, morphology, four-step life cycles,
+ clinical context, original schematic SVGs, and CDC source links. These schematic
+ images are explicitly labeled, not to scale, and are not diagnostic photographs.
+-Each entry links to the CDC microscopy gallery. Twelve questions provide
++Each entry links to the CDC microscopy gallery. Twenty-seven questions provide
+ explanations, unanswered checks, scoring, review, retry, and JSON downloads.
+ Attempts persist across page navigation within one browser session, not after
+ server restart or browser-session loss.
+@@ -145,6 +192,7 @@
+ python -m pip install -r requirements-dev.txt
+ python -m pytest tests -q
+ python -m compileall -q app.py app_pages component_ai component_layout component_theme pages content.py
++node tests/viewer_contract.cjs
+ ```
+ 
+ Tests cover all five navigation routes, Atlas search and quiz handoff, quiz
+@@ -153,6 +201,10 @@
+ limits, result invalidation, and YOLO RGB input/box extraction with a fake model.
+ The six supplied Keras models were also loaded and run against a real local
+ sample with TensorFlow 2.21.0; this verifies execution, not diagnostic accuracy.
++The refactor passed 28 Python tests and the Node viewer contract test. The
++Streamlit HTTP health check passed. Browser automation reported no available
++browser, so no rendered screenshot/visual verification is claimed. Trained
++YOLO/Faster R-CNN inference remains unverified until compatible weights arrive.
+ 
+ ## Deployment
+ 
+--- a/app_pages/atlas.py
++++ b/app_pages/atlas.py
+@@ -15,6 +15,7 @@
+     entry = next(e for e in matches if e["id"] == selected)
+     st.subheader(entry["name"])
+     st.caption(f"{entry['common_name']} · {entry['group']}")
++    st.caption("Reference label: " + entry["classification_label"] + " · " + ("Classifier mapping: " + ", ".join(entry["classifier_labels"]) if entry["classifier_labels"] else "Not a class in the bundled Keras models"))
+     overview, cycle, clinical = st.tabs(["Overview & morphology", "Life cycle", "Clinical context & sources"])
+     with overview:
+         visual, detail = st.columns([1, 1.25], gap="large")
+@@ -38,6 +39,6 @@
+         for source in entry["references"]:
+             st.markdown(f"[{source['title']}]({source['url']})")
+         st.caption(f"Content compiled against sources: {entry['reviewed_on']}. Not a clinical review or diagnostic protocol.")
+-    if st.button("Practice this species", icon=":material/quiz:", type="primary"):
++    if st.button("Practice this species", icon=":material/quiz:", type="primary", key="atlas_practice_action"):
+         st.session_state["requested_exam_species"] = selected
+         st.switch_page("app_pages/examination.py")
+--- a/app_pages/home.py
++++ b/app_pages/home.py
+@@ -34,6 +34,6 @@
+     st.markdown("**01 / Explore**  \nCompare morphology, follow life cycles, and read the clinical context.")
+     st.markdown("**02 / Observe**  \nChoose a microscopy sample or upload an image to examine a region of interest.")
+     st.markdown("**03 / Practice**  \nTest your recall with species-specific questions and explained answers.")
+-    if st.button("Open the Atlas", icon=":material/arrow_forward:", type="primary"):
++    if st.button("Open the Atlas", icon=":material/arrow_forward:", type="primary", key="home_atlas_action"):
+         st.switch_page("app_pages/atlas.py")
+ st.caption("Featured collection · Intestinal parasites and the Southeast Asian liver fluke")
+--- a/component_ai/README.md
++++ b/component_ai/README.md
+@@ -1,6 +1,6 @@
+ # Model contracts and provenance
+ 
+-The six `.keras` files are byte-for-byte copies of the user's 2026 models in
++The six `.keras` files in `keras/` are byte-for-byte copies of the user's 2026 models in
+ `pages_model/`. Each model has a sibling JSON contract. Class order and raw
+ 0–255 float32 preprocessing are inherited from `pages/03_Parasitic_Vision.py`;
+ three sigmoid output activations were verified by inspecting each saved model.
+@@ -34,7 +34,9 @@
+ mtime and size for invalidation; models carry SHA-256 hashes in reports. Restart
+ after replacing weights while preserving both mtime and size.
+ 
+-YOLO is optional. Add your trained `parasite_yolo11.pt` and install
+-`requirements-yolo.txt`. No generic pretrained model is substituted and no weights
+-are downloaded automatically. Embedded YOLO labels are used. The optional workflow
+-retains thresholding, class counts, bounding boxes, annotation, and JSON export.
++YOLO is optional: use `yolo/weights/parasite_yolo11.pt` and `requirements-yolo.txt`.
++Faster R-CNN is optional: use `rcnn/weights/parasite_fasterrcnn.pth`, matching
++`rcnn/model.json`, and `requirements-rcnn.txt`. Each family has its own manifest,
++loader and README. No generic pretrained model is substituted and no weights are
++downloaded automatically. Both adapters provide full-image boxes, class counts,
++annotation and JSON export. Keras alone performs center-region classification.
+--- /dev/null
++++ b/component_ai/detection.py
+@@ -0,0 +1,33 @@
++"""Manifest resolution shared by full-image detector backends."""
++import json
++from pathlib import Path
++
++AI_ROOT = Path(__file__).resolve().parent
++
++def detector_contract(family, root=AI_ROOT):
++    if family not in {"yolo", "rcnn"}:
++        raise ValueError("Unknown detector family")
++    folder = (Path(root) / family).resolve()
++    contract = json.loads((folder / "model.json").read_text(encoding="utf-8"))
++    weights = (folder / contract["weights"]).resolve()
++    if not weights.is_relative_to(folder):
++        raise ValueError("Weights must be inside the model family folder")
++    if family == "yolo":
++        if contract.get("architecture") != "ultralytics_yolo" or weights.suffix != ".pt":
++            raise ValueError("YOLO requires an Ultralytics .pt detection checkpoint")
++        if type(contract.get("image_size")) is not int or not 32 <= contract["image_size"] <= 4096:
++            raise ValueError("YOLO image_size must be an integer from 32 to 4096")
++    else:
++        if contract.get("architecture") not in {"fasterrcnn_resnet50_fpn", "fasterrcnn_resnet50_fpn_v2"}:
++            raise ValueError("Unsupported Faster R-CNN architecture")
++        labels = contract.get("labels")
++        if not isinstance(labels, list) or len(labels) < 2 or any(not isinstance(x, str) or not x for x in labels) or labels[0] != "__background__" or len(set(labels)) != len(labels):
++            raise ValueError("RCNN labels need unique class names and background at index zero")
++        for field in ("min_size", "max_size", "detections_per_image"):
++            if type(contract.get(field)) is not int or not 1 <= contract[field] <= 4096:
++                raise ValueError(f"Invalid RCNN {field}")
++        if contract["min_size"] > contract["max_size"]:
++            raise ValueError("RCNN min_size cannot exceed max_size")
++        if weights.suffix not in {".pt", ".pth"}:
++            raise ValueError("RCNN checkpoint must use .pt or .pth")
++    return contract, weights
+--- a/component_ai/img_classified_dataset1_cnn.json
++++ /dev/null
+@@ -1,11 +0,0 @@
+-{
+-  "schema_version": 1,
+-  "labels": [
+-    "artifact",
+-    "opisthorchis viverrini egg",
+-    "minute intestinal fluke egg"
+-  ],
+-  "preprocessing": "raw_0_255",
+-  "output": "sigmoid_scores",
+-  "provenance": "Class order and raw pixel preprocessing inherited from parasitic_platform_2026/pages/03_Parasitic_Vision.py; output activation inspected in saved model. Training provenance and external validation were not supplied."
+-}
+--- a/component_ai/img_classified_dataset1_paca.json
++++ /dev/null
+@@ -1,11 +0,0 @@
+-{
+-  "schema_version": 1,
+-  "labels": [
+-    "artifact",
+-    "opisthorchis viverrini egg",
+-    "minute intestinal fluke egg"
+-  ],
+-  "preprocessing": "raw_0_255",
+-  "output": "sigmoid_scores",
+-  "provenance": "Class order and raw pixel preprocessing inherited from parasitic_platform_2026/pages/03_Parasitic_Vision.py; output activation inspected in saved model. Training provenance and external validation were not supplied."
+-}
+--- a/component_ai/img_classified_dataset2_cnn.json
++++ /dev/null
+@@ -1,11 +0,0 @@
+-{
+-  "schema_version": 1,
+-  "labels": [
+-    "artifact",
+-    "opisthorchis viverrini egg",
+-    "minute intestinal fluke egg"
+-  ],
+-  "preprocessing": "raw_0_255",
+-  "output": "sigmoid_scores",
+-  "provenance": "Class order and raw pixel preprocessing inherited from parasitic_platform_2026/pages/03_Parasitic_Vision.py; output activation inspected in saved model. Training provenance and external validation were not supplied."
+-}
+--- a/component_ai/img_classified_dataset2_paca.json
++++ /dev/null
+@@ -1,11 +0,0 @@
+-{
+-  "schema_version": 1,
+-  "labels": [
+-    "artifact",
+-    "opisthorchis viverrini egg",
+-    "minute intestinal fluke egg"
+-  ],
+-  "preprocessing": "raw_0_255",
+-  "output": "sigmoid_scores",
+-  "provenance": "Class order and raw pixel preprocessing inherited from parasitic_platform_2026/pages/03_Parasitic_Vision.py; output activation inspected in saved model. Training provenance and external validation were not supplied."
+-}
+--- a/component_ai/img_classified_transf12_cnn.json
++++ /dev/null
+@@ -1,11 +0,0 @@
+-{
+-  "schema_version": 1,
+-  "labels": [
+-    "artifact",
+-    "opisthorchis viverrini egg",
+-    "minute intestinal fluke egg"
+-  ],
+-  "preprocessing": "raw_0_255",
+-  "output": "sigmoid_scores",
+-  "provenance": "Class order and raw pixel preprocessing inherited from parasitic_platform_2026/pages/03_Parasitic_Vision.py; output activation inspected in saved model. Training provenance and external validation were not supplied."
+-}
+--- a/component_ai/img_classified_transf12_paca.json
++++ /dev/null
+@@ -1,11 +0,0 @@
+-{
+-  "schema_version": 1,
+-  "labels": [
+-    "artifact",
+-    "opisthorchis viverrini egg",
+-    "minute intestinal fluke egg"
+-  ],
+-  "preprocessing": "raw_0_255",
+-  "output": "sigmoid_scores",
+-  "provenance": "Class order and raw pixel preprocessing inherited from parasitic_platform_2026/pages/03_Parasitic_Vision.py; output activation inspected in saved model. Training provenance and external validation were not supplied."
+-}
+--- /dev/null
++++ b/component_ai/keras/README.md
+@@ -0,0 +1,9 @@
++# Keras classifier assets
++
++The six existing `.keras` files and their six sibling `.json` contracts were
++moved here without changing their bytes. `component_ai.models.MODEL_DIR` resolves
++this folder. The public `component_ai.keras` interface exports discovery, loading,
++contract parsing and classification; existing `component_ai.models` imports remain
++compatible. Adding another `.keras` plus its JSON contract requires no UI edits.
++
++See `../README.md` for class order, preprocessing, output normalization and provenance.
+--- /dev/null
++++ b/component_ai/keras/__init__.py
+@@ -0,0 +1,4 @@
++"""Public Keras interface; sibling .keras and .json files are discovered here."""
++from component_ai.models import classify, discover_models, load_model, model_contract
++
++__all__ = ["classify", "discover_models", "load_model", "model_contract"]
+--- /dev/null
++++ b/component_ai/keras/img_classified_dataset1_cnn.json
+@@ -0,0 +1,11 @@
++{
++  "schema_version": 1,
++  "labels": [
++    "artifact",
++    "opisthorchis viverrini egg",
++    "minute intestinal fluke egg"
++  ],
++  "preprocessing": "raw_0_255",
++  "output": "sigmoid_scores",
++  "provenance": "Class order and raw pixel preprocessing inherited from parasitic_platform_2026/pages/03_Parasitic_Vision.py; output activation inspected in saved model. Training provenance and external validation were not supplied."
++}
+--- /dev/null
++++ b/component_ai/keras/img_classified_dataset1_paca.json
+@@ -0,0 +1,11 @@
++{
++  "schema_version": 1,
++  "labels": [
++    "artifact",
++    "opisthorchis viverrini egg",
++    "minute intestinal fluke egg"
++  ],
++  "preprocessing": "raw_0_255",
++  "output": "sigmoid_scores",
++  "provenance": "Class order and raw pixel preprocessing inherited from parasitic_platform_2026/pages/03_Parasitic_Vision.py; output activation inspected in saved model. Training provenance and external validation were not supplied."
++}
+--- /dev/null
++++ b/component_ai/keras/img_classified_dataset2_cnn.json
+@@ -0,0 +1,11 @@
++{
++  "schema_version": 1,
++  "labels": [
++    "artifact",
++    "opisthorchis viverrini egg",
++    "minute intestinal fluke egg"
++  ],
++  "preprocessing": "raw_0_255",
++  "output": "sigmoid_scores",
++  "provenance": "Class order and raw pixel preprocessing inherited from parasitic_platform_2026/pages/03_Parasitic_Vision.py; output activation inspected in saved model. Training provenance and external validation were not supplied."
++}
+--- /dev/null
++++ b/component_ai/keras/img_classified_dataset2_paca.json
+@@ -0,0 +1,11 @@
++{
++  "schema_version": 1,
++  "labels": [
++    "artifact",
++    "opisthorchis viverrini egg",
++    "minute intestinal fluke egg"
++  ],
++  "preprocessing": "raw_0_255",
++  "output": "sigmoid_scores",
++  "provenance": "Class order and raw pixel preprocessing inherited from parasitic_platform_2026/pages/03_Parasitic_Vision.py; output activation inspected in saved model. Training provenance and external validation were not supplied."
++}
+--- /dev/null
++++ b/component_ai/keras/img_classified_transf12_cnn.json
+@@ -0,0 +1,11 @@
++{
++  "schema_version": 1,
++  "labels": [
++    "artifact",
++    "opisthorchis viverrini egg",
++    "minute intestinal fluke egg"
++  ],
++  "preprocessing": "raw_0_255",
++  "output": "sigmoid_scores",
++  "provenance": "Class order and raw pixel preprocessing inherited from parasitic_platform_2026/pages/03_Parasitic_Vision.py; output activation inspected in saved model. Training provenance and external validation were not supplied."
++}
+--- /dev/null
++++ b/component_ai/keras/img_classified_transf12_paca.json
+@@ -0,0 +1,11 @@
++{
++  "schema_version": 1,
++  "labels": [
++    "artifact",
++    "opisthorchis viverrini egg",
++    "minute intestinal fluke egg"
++  ],
++  "preprocessing": "raw_0_255",
++  "output": "sigmoid_scores",
++  "provenance": "Class order and raw pixel preprocessing inherited from parasitic_platform_2026/pages/03_Parasitic_Vision.py; output activation inspected in saved model. Training provenance and external validation were not supplied."
++}
+--- a/component_ai/models.py
++++ b/component_ai/models.py
+@@ -7,7 +7,7 @@
+ import streamlit as st
+ from PIL import Image
+ 
+-MODEL_DIR = Path(__file__).resolve().parent
++MODEL_DIR = Path(__file__).resolve().parent / "keras"
+ 
+ def discover_models(root=MODEL_DIR):
+     return sorted(Path(root).glob("*.keras"))
+--- /dev/null
++++ b/component_ai/rcnn/README.md
+@@ -0,0 +1,27 @@
++# Faster R-CNN drop-in contract
++
++Install `requirements-rcnn.txt`. Place a trusted PyTorch checkpoint at
++`weights/parasite_fasterrcnn.pth` and set `model.json` labels in the exact training
++order, including `__background__` at index zero. The default foreground labels
++match the existing classifier for convenience; they do not imply trained weights
++are included. Weights from another class set require only a manifest edit.
++
++Supported architectures are torchvision `fasterrcnn_resnet50_fpn_v2` (default)
++and `fasterrcnn_resnet50_fpn`. Save with `torch.save(model.state_dict(), path)`
++or `torch.save({'model_state_dict': model.state_dict()}, path)`. A `state_dict`
++wrapper is also accepted. The network architecture, head class count, and
++manifest must match. Arbitrary backbones/full pickled modules/TorchScript files
++are not interchangeable; they need their own adapter.
++
++The loader builds the architecture with `weights=None, weights_backbone=None`,
++uses `torch.load(..., weights_only=True, map_location='cpu')`, loads strictly,
++and switches to eval mode. No pretrained weights are downloaded. PIL RGB is
++converted to CHW float32 in [0,1]; torchvision performs its own normalization and
++resizing, and returns boxes in original image coordinates. Inference runs on CPU
++under `torch.inference_mode()` and a resource lock. This is portable; GPU support
++can be added deliberately once the deployment target is known.
++
++`load_rcnn_model(path, version, contract_json)` returns `(model, lock, sha256)`.
++`run_rcnn_inference(model, image, labels, confidence, iou_threshold=0.45)` returns
++the same normalized report/image structure as the YOLO adapter, with class-aware
++NMS. The manifest records resize and maximum-detection settings for reproducibility.
+--- /dev/null
++++ b/component_ai/rcnn/__init__.py
+@@ -0,0 +1,60 @@
++"""Lazy, interchangeable Faster R-CNN inference service."""
++import hashlib
++import json
++import threading
++from collections import Counter
++from pathlib import Path
++import numpy as np
++import streamlit as st
++from component_ai.yolo import annotate_detections
++
++@st.cache_resource(show_spinner=False, max_entries=2)
++def load_rcnn_model(path, version, contract_json):
++    path = Path(path)
++    if not path.is_file():
++        raise FileNotFoundError(f"Faster R-CNN weights are missing: {path.name}")
++    try:
++        import torch
++        from torchvision.models.detection import fasterrcnn_resnet50_fpn, fasterrcnn_resnet50_fpn_v2
++    except (ImportError, RuntimeError) as exc:
++        raise RuntimeError("Install a matching torch/torchvision pair from requirements-rcnn.txt.") from exc
++    contract = json.loads(contract_json)
++    builders = {"fasterrcnn_resnet50_fpn": fasterrcnn_resnet50_fpn, "fasterrcnn_resnet50_fpn_v2": fasterrcnn_resnet50_fpn_v2}
++    builder = builders[contract["architecture"]]
++    model = builder(weights=None, weights_backbone=None, num_classes=len(contract["labels"]), min_size=contract["min_size"], max_size=contract["max_size"], box_detections_per_img=contract["detections_per_image"])
++    checkpoint = torch.load(str(path), weights_only=True, map_location="cpu")
++    if not isinstance(checkpoint, dict):
++        raise ValueError("Expected a state_dict or a checkpoint containing model_state_dict")
++    state = checkpoint.get("model_state_dict", checkpoint.get("state_dict", checkpoint))
++    model.load_state_dict(state, strict=True)
++    model.eval()
++    return model, threading.RLock(), hashlib.sha256(path.read_bytes()).hexdigest()
++
++def run_rcnn_inference(model, image, labels, confidence_threshold, *, iou_threshold=0.45):
++    import torch
++    from torchvision.ops import batched_nms
++    if not 0 <= confidence_threshold <= 1 or not 0 <= iou_threshold <= 1:
++        raise ValueError("Detection thresholds must be between zero and one")
++    rgb = image.convert("RGB")
++    tensor = torch.from_numpy(np.array(rgb, dtype=np.float32) / 255.0).permute(2, 0, 1)
++    with torch.inference_mode():
++        outputs = model([tensor])
++    if not isinstance(outputs, list) or len(outputs) != 1:
++        raise ValueError("Expected one Faster R-CNN result for one image")
++    raw = outputs[0]
++    boxes = raw["boxes"].detach().cpu()
++    scores = raw["scores"].detach().cpu()
++    ids = raw["labels"].detach().cpu()
++    if boxes.ndim != 2 or boxes.shape[1] != 4 or scores.ndim != 1 or ids.ndim != 1 or len(boxes) != len(scores) or len(scores) != len(ids):
++        raise ValueError("Malformed Faster R-CNN outputs")
++    if not torch.isfinite(boxes).all() or not torch.isfinite(scores).all() or ((scores < 0) | (scores > 1)).any():
++        raise ValueError("Invalid Faster R-CNN boxes or scores")
++    if ids.dtype not in (torch.int32, torch.int64) or ((ids < 0) | (ids >= len(labels))).any():
++        raise ValueError("Detection class IDs do not match the manifest")
++    boxes[:, [0, 2]] = boxes[:, [0, 2]].clamp(0, rgb.width)
++    boxes[:, [1, 3]] = boxes[:, [1, 3]].clamp(0, rgb.height)
++    valid = (scores >= confidence_threshold) & (ids > 0) & (boxes[:, 2] > boxes[:, 0]) & (boxes[:, 3] > boxes[:, 1])
++    boxes, scores, ids = boxes[valid], scores[valid], ids[valid]
++    keep = batched_nms(boxes, scores, ids, iou_threshold)
++    detections = [{"class_id": int(ids[i]), "class_name": labels[int(ids[i])], "confidence": float(scores[i]), "bbox_xyxy": boxes[i].tolist()} for i in keep]
++    return {"detections": detections, "class_counts": dict(Counter(d["class_name"] for d in detections)), "class_names": labels[1:], "confidence_threshold": confidence_threshold, "iou_threshold": iou_threshold, "annotated_image": annotate_detections(rgb, detections)}
+--- /dev/null
++++ b/component_ai/rcnn/model.json
+@@ -0,0 +1,9 @@
++{
++  "schema_version": 1,
++  "architecture": "fasterrcnn_resnet50_fpn_v2",
++  "weights": "weights/parasite_fasterrcnn.pth",
++  "labels": ["__background__", "artifact", "opisthorchis viverrini egg", "minute intestinal fluke egg"],
++  "min_size": 800,
++  "max_size": 1333,
++  "detections_per_image": 100
++}
+--- /dev/null
++++ b/component_ai/rcnn/weights/PLACE_WEIGHTS_HERE.txt
+@@ -0,0 +1,3 @@
++Place a trained torchvision Faster R-CNN state_dict here as parasite_fasterrcnn.pth.
++Set ../model.json labels and architecture to match training. Index zero is background.
++This text file is not a model and is never passed to the loader.
+--- /dev/null
++++ b/component_ai/roi.py
+@@ -0,0 +1,55 @@
++"""Image conversion and region-of-interest helpers."""
++
++import base64
++import io
++
++import numpy as np
++from PIL import Image
++
++
++CropBox = tuple[int, int, int, int]
++
++
++def image_to_base64(image: Image.Image, image_format: str = "PNG") -> str:
++    """Encode a Pillow image for the custom browser viewer component."""
++    buffer = io.BytesIO()
++    image.save(buffer, format=image_format)
++    return base64.b64encode(buffer.getvalue()).decode("utf-8")
++
++
++def compute_center_cell_crop_box(
++    image: Image.Image,
++    viewport: int,
++    zoom: float,
++    pan_x: float,
++    pan_y: float,
++) -> CropBox:
++    """Map the viewer's center grid cell to a valid source-image crop box."""
++    width, height = image.size
++    viewport_size = float(max(1, viewport))
++    zoom_level = float(max(1e-6, zoom))
++    step = viewport_size / 3.0
++    scale = max(
++        1e-9,
++        min(viewport_size / float(width), viewport_size / float(height)) * zoom_level,
++    )
++    center = viewport_size / 2.0
++
++    def screen_to_image(screen_x: float, screen_y: float) -> tuple[float, float]:
++        return (
++            (screen_x - center - float(pan_x)) / scale + width / 2.0,
++            (screen_y - center - float(pan_y)) / scale + height / 2.0,
++        )
++
++    raw_left, raw_top = screen_to_image(step, step)
++    raw_right, raw_bottom = screen_to_image(2.0 * step, 2.0 * step)
++    left = float(np.clip(min(raw_left, raw_right), 0.0, float(width)))
++    right = float(np.clip(max(raw_left, raw_right), 0.0, float(width)))
++    top = float(np.clip(min(raw_top, raw_bottom), 0.0, float(height)))
++    bottom = float(np.clip(max(raw_top, raw_bottom), 0.0, float(height)))
++
++    x1 = max(0, min(int(np.floor(left)), width - 1))
++    y1 = max(0, min(int(np.floor(top)), height - 1))
++    x2 = max(x1 + 1, min(int(np.ceil(right)), width))
++    y2 = max(y1 + 1, min(int(np.ceil(bottom)), height))
++    return x1, y1, x2, y2
+--- a/component_ai/yolo.py
++++ /dev/null
+@@ -1,205 +0,0 @@
+-"""YOLO11 object-detection services for the Parasitic Vision page.
+-
+-This module is intentionally separate from the legacy Keras ROI-classification
+-pipeline in ``component_models.py``.  It owns model loading, full-image YOLO
+-inference, result normalization, and annotation rendering.
+-"""
+-
+-from collections import Counter
+-import hashlib
+-import threading
+-from pathlib import Path
+-from typing import Any, Mapping, Sequence
+-
+-import numpy as np
+-import streamlit as st
+-from PIL import Image, ImageDraw, ImageFont
+-
+-
+-DEFAULT_CLASS_NAMES = (
+-    "artifact",
+-    "opisthorchis viverrini egg",
+-    "minute intestinal fluke egg",
+-)
+-
+-_BOX_COLORS = (
+-    "#22D3EE",
+-    "#A78BFA",
+-    "#F59E0B",
+-    "#34D399",
+-    "#FB7185",
+-    "#60A5FA",
+-)
+-
+-
+-@st.cache_resource(show_spinner=False, max_entries=2)
+-def load_yolo_model(weights_path: str, version: tuple) -> Any:
+-    """Load and cache an Ultralytics YOLO model for Streamlit reruns.
+-
+-    ``weights_path`` must point to custom YOLO11 detection weights.  The
+-    Ultralytics import is lazy so the rest of the platform can still start and
+-    show installation guidance when the optional dependency is absent.
+-    """
+-    path = Path(weights_path).expanduser().resolve()
+-    if not path.is_file():
+-        raise FileNotFoundError(f"YOLO weights file not found: {path}")
+-
+-    try:
+-        from ultralytics import YOLO
+-    except ImportError as exc:
+-        raise RuntimeError(
+-            "Ultralytics is required for Auto Detection. Install the project "
+-            "requirements with `pip install -r requirements.txt`."
+-        ) from exc
+-
+-    return YOLO(str(path)), threading.RLock(), hashlib.sha256(path.read_bytes()).hexdigest()
+-
+-
+-def _normalize_class_names(
+-    names: Mapping[int, str] | Sequence[str] | None,
+-    fallback: Sequence[str],
+-) -> dict[int, str]:
+-    """Return a stable integer-to-label mapping from YOLO metadata."""
+-    if isinstance(names, Mapping):
+-        normalized = {int(index): str(label) for index, label in names.items()}
+-        if normalized:
+-            return normalized
+-    elif names:
+-        return {index: str(label) for index, label in enumerate(names)}
+-    return {index: str(label) for index, label in enumerate(fallback)}
+-
+-
+-def _tensor_to_numpy(value: Any) -> np.ndarray:
+-    """Convert an Ultralytics/Torch tensor-like value to a NumPy array."""
+-    if hasattr(value, "detach"):
+-        value = value.detach()
+-    if hasattr(value, "cpu"):
+-        value = value.cpu()
+-    if hasattr(value, "numpy"):
+-        value = value.numpy()
+-    return np.asarray(value)
+-
+-
+-def _extract_detections(
+-    result: Any,
+-    fallback_class_names: Sequence[str],
+-) -> tuple[list[dict[str, Any]], dict[int, str]]:
+-    """Convert one Ultralytics ``Results`` object into plain dictionaries."""
+-    class_names = _normalize_class_names(
+-        getattr(result, "names", None),
+-        fallback_class_names,
+-    )
+-    boxes = getattr(result, "boxes", None)
+-    if boxes is None:
+-        return [], class_names
+-
+-    coordinates = _tensor_to_numpy(boxes.xyxy).reshape(-1, 4)
+-    confidences = _tensor_to_numpy(boxes.conf).reshape(-1)
+-    class_ids = _tensor_to_numpy(boxes.cls).reshape(-1)
+-
+-    detections: list[dict[str, Any]] = []
+-    for xyxy, confidence, class_id_value in zip(
+-        coordinates,
+-        confidences,
+-        class_ids,
+-    ):
+-        class_id = int(class_id_value)
+-        detections.append(
+-            {
+-                "class_id": class_id,
+-                "class_name": class_names.get(class_id, f"class_{class_id}"),
+-                "confidence": float(confidence),
+-                "bbox_xyxy": [float(value) for value in xyxy.tolist()],
+-            }
+-        )
+-    return detections, class_names
+-
+-
+-def annotate_detections(
+-    image: Image.Image,
+-    detections: Sequence[Mapping[str, Any]],
+-) -> Image.Image:
+-    """Draw bounding boxes, labels, and confidence scores on an RGB image."""
+-    annotated = image.convert("RGB").copy()
+-    draw = ImageDraw.Draw(annotated)
+-    font = ImageFont.load_default()
+-    line_width = max(2, round(max(annotated.size) / 400))
+-
+-    for detection in detections:
+-        class_id = int(detection["class_id"])
+-        color = _BOX_COLORS[class_id % len(_BOX_COLORS)]
+-        x1, y1, x2, y2 = [
+-            int(round(float(value))) for value in detection["bbox_xyxy"]
+-        ]
+-        x1 = max(0, min(x1, annotated.width - 1))
+-        y1 = max(0, min(y1, annotated.height - 1))
+-        x2 = max(x1 + 1, min(x2, annotated.width))
+-        y2 = max(y1 + 1, min(y2, annotated.height))
+-
+-        draw.rectangle((x1, y1, x2, y2), outline=color, width=line_width)
+-        label = (
+-            f"{detection['class_name']} "
+-            f"{float(detection['confidence']):.2f}"
+-        )
+-        label_box = draw.textbbox((x1, y1), label, font=font)
+-        label_height = label_box[3] - label_box[1] + 6
+-        label_width = label_box[2] - label_box[0] + 8
+-        label_top = max(0, y1 - label_height)
+-        draw.rectangle(
+-            (x1, label_top, min(annotated.width, x1 + label_width), y1),
+-            fill=color,
+-        )
+-        draw.text((x1 + 4, label_top + 3), label, fill="black", font=font)
+-
+-    return annotated
+-
+-
+-def run_yolo_inference(
+-    model: Any,
+-    image: Image.Image,
+-    confidence_threshold: float,
+-    *,
+-    iou_threshold: float = 0.45,
+-    image_size: int = 640,
+-    fallback_class_names: Sequence[str] = DEFAULT_CLASS_NAMES,
+-) -> dict[str, Any]:
+-    """Run YOLO detection and return a UI/database-friendly result mapping.
+-
+-    The confidence threshold is passed directly to YOLO before detections are
+-    normalized.  No Streamlit widget or session state is accessed here, which
+-    keeps the inference service reusable outside this page.
+-    """
+-    rgb_image = image.convert("RGB")
+-    results = model.predict(
+-        # Ultralytics treats numpy inputs as BGR; PIL inputs preserve RGB.
+-        source=rgb_image,
+-        conf=float(confidence_threshold),
+-        iou=float(iou_threshold),
+-        imgsz=int(image_size),
+-        verbose=False,
+-    )
+-    if not results:
+-        raise RuntimeError("YOLO returned no result object for the image.")
+-
+-    result = results[0]
+-    detections, class_names = _extract_detections(
+-        result,
+-        fallback_class_names,
+-    )
+-    counts = Counter(item["class_name"] for item in detections)
+-    speed = {
+-        str(stage): float(milliseconds)
+-        for stage, milliseconds in (getattr(result, "speed", None) or {}).items()
+-        if milliseconds is not None
+-    }
+-
+-    return {
+-        "annotated_image": annotate_detections(rgb_image, detections),
+-        "detections": detections,
+-        "class_counts": dict(sorted(counts.items())),
+-        "class_names": [class_names[index] for index in sorted(class_names)],
+-        "confidence_threshold": float(confidence_threshold),
+-        "iou_threshold": float(iou_threshold),
+-        "image_size": int(image_size),
+-        "speed_ms": speed,
+-    }
+--- /dev/null
++++ b/component_ai/yolo/README.md
+@@ -0,0 +1,17 @@
++# YOLO drop-in contract
++
++Place a trusted, trained Ultralytics object-detection `.pt` checkpoint at
++`weights/parasite_yolo11.pt`. Install `requirements-yolo.txt`. The Detector
++automatically enables the YOLO option when this file exists; no Python edits
++are needed. Change `model.json` if you use a different filename or image size.
++Relative weight paths must remain inside this directory.
++
++The checkpoint must expose the Ultralytics detection interface and contain its
++ordered class names. Classification-only, segmentation-only, and arbitrary Torch
++state dictionaries are not equivalent formats. No COCO weights are substituted
++or downloaded. Only trusted administrator-provided checkpoints should be used.
++
++Interface: `load_yolo_model(path, file_version)` returns `(model, lock, sha256)`;
++`run_yolo_inference(model, PIL_image, confidence, iou_threshold=0.45,
++image_size=640)` returns boxes, scores, class counts, names, and an annotated PIL
++image. Loading is lazy, cached, and invalidated when file mtime or size changes.
+--- /dev/null
++++ b/component_ai/yolo/__init__.py
+@@ -0,0 +1,4 @@
++"""Drop-in Ultralytics YOLO interface."""
++from .service import load_yolo_model, run_yolo_inference, annotate_detections
++
++__all__ = ["load_yolo_model", "run_yolo_inference", "annotate_detections"]
+--- /dev/null
++++ b/component_ai/yolo/model.json
+@@ -0,0 +1,7 @@
++{
++  "schema_version": 1,
++  "architecture": "ultralytics_yolo",
++  "weights": "weights/parasite_yolo11.pt",
++  "image_size": 640,
++  "class_labels": "embedded_in_weights"
++}
+--- /dev/null
++++ b/component_ai/yolo/service.py
+@@ -0,0 +1,205 @@
++"""YOLO11 object-detection services for the Parasitic Vision page.
++
++This module is intentionally separate from the legacy Keras ROI-classification
++pipeline in ``component_models.py``.  It owns model loading, full-image YOLO
++inference, result normalization, and annotation rendering.
++"""
++
++from collections import Counter
++import hashlib
++import threading
++from pathlib import Path
++from typing import Any, Mapping, Sequence
++
++import numpy as np
++import streamlit as st
++from PIL import Image, ImageDraw, ImageFont
++
++
++DEFAULT_CLASS_NAMES = (
++    "artifact",
++    "opisthorchis viverrini egg",
++    "minute intestinal fluke egg",
++)
++
++_BOX_COLORS = (
++    "#22D3EE",
++    "#A78BFA",
++    "#F59E0B",
++    "#34D399",
++    "#FB7185",
++    "#60A5FA",
++)
++
++
++@st.cache_resource(show_spinner=False, max_entries=2)
++def load_yolo_model(weights_path: str, version: tuple) -> Any:
++    """Load and cache an Ultralytics YOLO model for Streamlit reruns.
++
++    ``weights_path`` must point to custom YOLO11 detection weights.  The
++    Ultralytics import is lazy so the rest of the platform can still start and
++    show installation guidance when the optional dependency is absent.
++    """
++    path = Path(weights_path).expanduser().resolve()
++    if not path.is_file():
++        raise FileNotFoundError(f"YOLO weights file not found: {path}")
++
++    try:
++        from ultralytics import YOLO
++    except ImportError as exc:
++        raise RuntimeError(
++            "Ultralytics is required for Auto Detection. Install the project "
++            "requirements with `pip install -r requirements.txt`."
++        ) from exc
++
++    return YOLO(str(path)), threading.RLock(), hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def _normalize_class_names(
++    names: Mapping[int, str] | Sequence[str] | None,
++    fallback: Sequence[str],
++) -> dict[int, str]:
++    """Return a stable integer-to-label mapping from YOLO metadata."""
++    if isinstance(names, Mapping):
++        normalized = {int(index): str(label) for index, label in names.items()}
++        if normalized:
++            return normalized
++    elif names:
++        return {index: str(label) for index, label in enumerate(names)}
++    return {index: str(label) for index, label in enumerate(fallback)}
++
++
++def _tensor_to_numpy(value: Any) -> np.ndarray:
++    """Convert an Ultralytics/Torch tensor-like value to a NumPy array."""
++    if hasattr(value, "detach"):
++        value = value.detach()
++    if hasattr(value, "cpu"):
++        value = value.cpu()
++    if hasattr(value, "numpy"):
++        value = value.numpy()
++    return np.asarray(value)
++
++
++def _extract_detections(
++    result: Any,
++    fallback_class_names: Sequence[str],
++) -> tuple[list[dict[str, Any]], dict[int, str]]:
++    """Convert one Ultralytics ``Results`` object into plain dictionaries."""
++    class_names = _normalize_class_names(
++        getattr(result, "names", None),
++        fallback_class_names,
++    )
++    boxes = getattr(result, "boxes", None)
++    if boxes is None:
++        return [], class_names
++
++    coordinates = _tensor_to_numpy(boxes.xyxy).reshape(-1, 4)
++    confidences = _tensor_to_numpy(boxes.conf).reshape(-1)
++    class_ids = _tensor_to_numpy(boxes.cls).reshape(-1)
++
++    detections: list[dict[str, Any]] = []
++    for xyxy, confidence, class_id_value in zip(
++        coordinates,
++        confidences,
++        class_ids,
++    ):
++        class_id = int(class_id_value)
++        detections.append(
++            {
++                "class_id": class_id,
++                "class_name": class_names.get(class_id, f"class_{class_id}"),
++                "confidence": float(confidence),
++                "bbox_xyxy": [float(value) for value in xyxy.tolist()],
++            }
++        )
++    return detections, class_names
++
++
++def annotate_detections(
++    image: Image.Image,
++    detections: Sequence[Mapping[str, Any]],
++) -> Image.Image:
++    """Draw bounding boxes, labels, and confidence scores on an RGB image."""
++    annotated = image.convert("RGB").copy()
++    draw = ImageDraw.Draw(annotated)
++    font = ImageFont.load_default()
++    line_width = max(2, round(max(annotated.size) / 400))
++
++    for detection in detections:
++        class_id = int(detection["class_id"])
++        color = _BOX_COLORS[class_id % len(_BOX_COLORS)]
++        x1, y1, x2, y2 = [
++            int(round(float(value))) for value in detection["bbox_xyxy"]
++        ]
++        x1 = max(0, min(x1, annotated.width - 1))
++        y1 = max(0, min(y1, annotated.height - 1))
++        x2 = max(x1 + 1, min(x2, annotated.width))
++        y2 = max(y1 + 1, min(y2, annotated.height))
++
++        draw.rectangle((x1, y1, x2, y2), outline=color, width=line_width)
++        label = (
++            f"{detection['class_name']} "
++            f"{float(detection['confidence']):.2f}"
++        )
++        label_box = draw.textbbox((x1, y1), label, font=font)
++        label_height = label_box[3] - label_box[1] + 6
++        label_width = label_box[2] - label_box[0] + 8
++        label_top = max(0, y1 - label_height)
++        draw.rectangle(
++            (x1, label_top, min(annotated.width, x1 + label_width), y1),
++            fill=color,
++        )
++        draw.text((x1 + 4, label_top + 3), label, fill="black", font=font)
++
++    return annotated
++
++
++def run_yolo_inference(
++    model: Any,
++    image: Image.Image,
++    confidence_threshold: float,
++    *,
++    iou_threshold: float = 0.45,
++    image_size: int = 640,
++    fallback_class_names: Sequence[str] = DEFAULT_CLASS_NAMES,
++) -> dict[str, Any]:
++    """Run YOLO detection and return a UI/database-friendly result mapping.
++
++    The confidence threshold is passed directly to YOLO before detections are
++    normalized.  No Streamlit widget or session state is accessed here, which
++    keeps the inference service reusable outside this page.
++    """
++    rgb_image = image.convert("RGB")
++    results = model.predict(
++        # Ultralytics treats numpy inputs as BGR; PIL inputs preserve RGB.
++        source=rgb_image,
++        conf=float(confidence_threshold),
++        iou=float(iou_threshold),
++        imgsz=int(image_size),
++        verbose=False,
++    )
++    if not results:
++        raise RuntimeError("YOLO returned no result object for the image.")
++
++    result = results[0]
++    detections, class_names = _extract_detections(
++        result,
++        fallback_class_names,
++    )
++    counts = Counter(item["class_name"] for item in detections)
++    speed = {
++        str(stage): float(milliseconds)
++        for stage, milliseconds in (getattr(result, "speed", None) or {}).items()
++        if milliseconds is not None
++    }
++
++    return {
++        "annotated_image": annotate_detections(rgb_image, detections),
++        "detections": detections,
++        "class_counts": dict(sorted(counts.items())),
++        "class_names": [class_names[index] for index in sorted(class_names)],
++        "confidence_threshold": float(confidence_threshold),
++        "iou_threshold": float(iou_threshold),
++        "image_size": int(image_size),
++        "speed_ms": speed,
++    }
+--- /dev/null
++++ b/component_ai/yolo/weights/PLACE_WEIGHTS_HERE.txt
+@@ -0,0 +1,3 @@
++Place your trained Ultralytics detection weights here as parasite_yolo11.pt.
++This text file is a placeholder, not model weights. No dummy predictions run.
++See ../README.md for the supported training/export contract.
+--- a/component_layout/detector.py
++++ b/component_layout/detector.py
+@@ -4,17 +4,18 @@
+ import json
+ from datetime import datetime, timezone
+ import streamlit as st
+-from PIL import ImageDraw
+ from content import ROOT
+ from component_ai.images import discover_samples, decode_image, crop_image
+ from component_ai.models import discover_models, classify, model_contract, file_version
++from component_ai.detection import detector_contract
++from component_layout.viewer import render_image_viewer, selection_from_event
+ 
+ def fingerprint(image_hash, config):
+     return hashlib.sha256(json.dumps({"image": image_hash, "config": config}, sort_keys=True).encode()).hexdigest()
+ 
+ def render_detector():
+     st.caption("Research use · Scores are uncalibrated model outputs. All findings require qualified review.")
+-    mode = st.segmented_control("Analysis method", ["Keras · region classification", "YOLO · object detection"], default="Keras · region classification", key="detector_mode", persist_state="session")
++    mode = st.selectbox("Model family", ["Keras classifier", "YOLO detector", "Faster R-CNN detector"], key="detector_family", persist_state="session")
+     source = st.segmented_control("Image source", ["Sample collection", "Upload image"], default="Sample collection", key="detector_source", persist_state="session")
+     data = None
+     label = ""
+@@ -42,10 +43,10 @@
+         return
+     image_hash = hashlib.sha256(data).hexdigest()
+     st.caption(f"{label} · {image.width:,} × {image.height:,} pixels")
+-    if mode == "YOLO · object detection":
+-        render_yolo(image, label, image_hash)
+-    elif mode == "Keras · region classification":
++    if mode == "Keras classifier":
+         render_keras(image, label, image_hash)
++    else:
++        render_objects(image, label, image_hash, "yolo" if mode == "YOLO detector" else "rcnn")
+ 
+ def save_result(result, config, image_hash, label):
+     st.session_state.detector_result = {
+@@ -63,22 +64,35 @@
+     return result["report"]
+ 
+ def render_keras(image, label, image_hash):
+-    visual, controls = st.columns([1.4, 1], gap="large")
+-    with controls:
+-        st.subheader("Select a region")
+-        st.caption("Move the crop bounds around a single target object. Coordinates refer to the oriented source image.")
+-        x = st.slider("Horizontal bounds (pixels)", 0, image.width, (image.width // 3, max(image.width // 3 + 1, 2 * image.width // 3)), key=f"roi_x_{image_hash[:12]}")
+-        y = st.slider("Vertical bounds (pixels)", 0, image.height, (image.height // 3, max(image.height // 3 + 1, 2 * image.height // 3)), key=f"roi_y_{image_hash[:12]}")
+-        paths = discover_models()
+-        chosen = st.multiselect("Classification models", paths, default=paths[:1], format_func=lambda p: p.stem.replace("img_classified_", ""), key="detector_models", persist_state="session")
+-        if not paths:
+-            st.info("Add .keras models and their JSON contracts to component_ai/ to enable classification.")
+-        st.caption("The migrated models distinguish artifact, O. viverrini egg, and minute intestinal fluke egg. Other Atlas species are outside this classifier's scope.")
+-    box = (x[0], y[0], x[1], y[1])
+-    preview = image.copy()
+-    ImageDraw.Draw(preview).rectangle(box, outline="#20665C", width=max(2, image.width // 250))
+-    with visual:
+-        st.image(preview, caption="Source image · selected region outlined", width="stretch")
++    paths = discover_models()
++    chosen = st.multiselect("Classification models", paths, default=paths[:1], format_func=lambda p: p.stem.replace("img_classified_", ""), key="detector_models", persist_state="session")
++    if not paths:
++        st.info("Add .keras models and sibling JSON contracts to component_ai/keras/.")
++    st.caption("Drag to pan and zoom to place one target in the center box, then click Calculate in the image. Only the selected Keras classifiers analyze this region.")
++    st.caption("Classifier scope: artifact, O. viverrini egg, and minute intestinal fluke egg. Atlas coverage does not expand the trained model's classes.")
++    session = st.session_state
++    if session.get("viewer_image_id") != image_hash:
++        session["viewer_image_id"] = image_hash
++        session["viewer_state"] = {"zoom": 1.0, "panX": 0.0, "panY": 0.0, "viewport": 0}
++        session["viewer_box"] = None
++        session["viewer_token"] = ""
++    event = render_image_viewer(image, image_hash, session["viewer_state"])
++    calculate = False
++    if event is not None:
++        try:
++            box, state, token = selection_from_event(image, event, image_hash)
++        except (ValueError, TypeError, KeyError) as exc:
++            st.error(f"Cannot use this selection: {exc}")
++            return
++        if token != session["viewer_token"]:
++            session["viewer_box"] = box
++            session["viewer_state"] = state
++            session["viewer_token"] = token
++            calculate = True
++    if session["viewer_box"] is None:
++        st.info("Position the target and click Calculate to classify the center box.")
++        return
++    box = session["viewer_box"]
+     try:
+         crop = crop_image(image, box)
+         contracts = [{"file": p.name, "version": file_version(p), "contract": model_contract(p)} for p in chosen]
+@@ -86,12 +100,17 @@
+         st.error(str(exc))
+         return
+     config = {"mode": "keras", "roi_xyxy": list(box), "models": contracts}
+-    if st.button("Analyze selected region", icon=":material/biotech:", type="primary", disabled=not chosen, width="stretch"):
+-        with st.spinner("Loading selected models and analyzing the crop…"):
+-            result = classify(crop, chosen)
+-        save_result(result, config, image_hash, label)
++    if calculate:
++        if not chosen:
++            st.warning("Select at least one classification model, then click Calculate again.")
++        else:
++            with st.spinner("Loading selected models and analyzing the center box..."):
++                result = classify(crop, chosen)
++            result["viewer"] = {**session["viewer_state"], "calc_token": session["viewer_token"]}
++            save_result(result, config, image_hash, label)
+     report = current_result(config, image_hash)
+     if report:
++        st.caption("Snapshot of the last Calculate action. Moving or zooming the viewer does not rerun inference until Calculate is pressed again.")
+         render_classification(report, crop)
+ 
+ def render_classification(report, crop):
+@@ -107,7 +126,7 @@
+             st.markdown(f"**Highest ensemble score: {ensemble['label']}**")
+             st.caption("Relative scores normalized per model, then averaged. These are not calibrated clinical probabilities.")
+             st.dataframe([{"Class": label, "Mean relative score": round(score, 4), "Votes": ensemble["vote_counts"][label]} for label, score in zip(ensemble["labels"], ensemble["scores"])], hide_index=True, width="stretch")
+-            st.write("Majority vote: " + " / ".join(ensemble["majority"]) + (" (tie)" if len(ensemble["majority"]) > 1 else ""))
++            st.subheader("Majority vote: " + " / ".join(ensemble["majority"]) + (" (tie)" if len(ensemble["majority"]) > 1 else ""))
+         if not report["predictions"]:
+             st.warning("No selected model produced a valid prediction.")
+         for result in report["predictions"]:
+@@ -119,36 +138,47 @@
+ def download_report(report):
+     st.download_button("Download analysis report", json.dumps(report, indent=2, allow_nan=False), file_name="parasite_analysis.json", mime="application/json", icon=":material/download:")
+ 
+-def render_yolo(image, label, image_hash):
+-    from component_ai.yolo import load_yolo_model, run_yolo_inference
+-    weights = ROOT / "component_ai" / "parasite_yolo11.pt"
+-    threshold = st.slider("Detection confidence threshold", 0.05, 0.95, 0.25, 0.05, key="yolo_threshold", persist_state="session")
+-    st.image(image, caption="Full image for object detection", width="stretch")
++def render_objects(image, label, image_hash, family):
++    try:
++        manifest, weights = detector_contract(family)
++    except (ValueError, KeyError, OSError) as exc:
++        st.error(f"Invalid detector manifest: {exc}")
++        return
++    name = "YOLO" if family == "yolo" else "Faster R-CNN"
++    threshold = st.slider("Detection confidence threshold", 0.05, 0.95, 0.25, 0.05, key=f"{family}_threshold", persist_state="session")
++    st.image(image, caption=f"Full image for {name} object detection", width="stretch")
+     if not weights.is_file():
+-        st.info("YOLO weights were not supplied with the 2026 project. Add trained parasite_yolo11.pt weights to component_ai/ and install requirements-yolo.txt to enable this mode.")
+-    config = {"mode": "yolo", "weights": weights.name, "version": file_version(weights) if weights.is_file() else None, "confidence": threshold, "iou": 0.45, "image_size": 640}
++        st.info(f"{name} scaffold is ready. Place trained weights at component_ai/{family}/{manifest['weights']} and install requirements-{family}.txt. No model is supplied for this backend.")
++    config = {"mode": family, "manifest": manifest, "version": file_version(weights) if weights.is_file() else None, "confidence": threshold, "iou": 0.45}
+     if st.button("Detect objects", type="primary", disabled=not weights.is_file()):
+         try:
+-            with st.spinner("Scanning the full image…"):
+-                model, lock, digest = load_yolo_model(str(weights), file_version(weights))
+-                with lock:
+-                    result = run_yolo_inference(model, image, threshold)
++            with st.spinner(f"Scanning the full image with {name}?"):
++                if family == "yolo":
++                    from component_ai.yolo import load_yolo_model, run_yolo_inference
++                    model, lock, digest = load_yolo_model(str(weights), file_version(weights))
++                    with lock:
++                        result = run_yolo_inference(model, image, threshold, iou_threshold=0.45, image_size=manifest["image_size"])
++                else:
++                    from component_ai.rcnn import load_rcnn_model, run_rcnn_inference
++                    model, lock, digest = load_rcnn_model(str(weights), file_version(weights), json.dumps(manifest, sort_keys=True))
++                    with lock:
++                        result = run_rcnn_inference(model, image, manifest["labels"], threshold, iou_threshold=0.45)
+                 annotated = result.pop("annotated_image")
+                 result["model_sha256"] = digest
+             save_result(result, config, image_hash, label)
+-            st.session_state["yolo_annotated"] = annotated
++            st.session_state["detector_annotated"] = annotated
+         except Exception as exc:
+             st.session_state.detector_result = None
+             st.error(f"Object detection could not complete: {exc}")
+     report = current_result(config, image_hash)
+     if report:
+         st.metric("Objects detected", len(report["detections"]))
+-        st.image(st.session_state["yolo_annotated"], caption="Detected objects", width="stretch")
++        st.image(st.session_state["detector_annotated"], caption="Detected objects", width="stretch")
+         if report["detections"]:
+             st.dataframe(report["detections"], hide_index=True)
+         else:
+             st.info("No objects met this threshold. This does not exclude parasites in the specimen.")
+         buffer = io.BytesIO()
+-        st.session_state["yolo_annotated"].save(buffer, format="PNG")
++        st.session_state["detector_annotated"].save(buffer, format="PNG")
+         st.download_button("Download annotated image", buffer.getvalue(), file_name="parasite_detections.png", mime="image/png")
+         download_report(report)
+--- /dev/null
++++ b/component_layout/viewer.py
+@@ -0,0 +1,29 @@
++"""2026 viewer adapter; its existing iframe protocol is preserved intentionally."""
++import math
++from component_layout.viewer_component import viewer_component
++from component_ai.roi import image_to_base64, compute_center_cell_crop_box
++
++def render_image_viewer(image, image_id, state):
++    return viewer_component(image_b64=image_to_base64(image), viewport=0,
++                            init_zoom=state["zoom"], init_panX=state["panX"], init_panY=state["panY"],
++                            theme_mode="Light", key=f"viewer_{image_id[:16]}", image_id=image_id)
++
++def selection_from_event(image, event, image_id):
++    if not isinstance(event, dict) or event.get("action") != "calculate" or event.get("image_id") != image_id:
++        raise ValueError("Selection does not belong to the current image")
++    values = {key: float(event[key]) for key in ("zoom", "panX", "panY", "viewport")}
++    if not all(math.isfinite(v) for v in values.values()) or not 0.15 <= values["zoom"] <= 12 or not 1 <= values["viewport"] <= 4096:
++        raise ValueError("Invalid viewer coordinates")
++    viewport = int(values["viewport"])
++    # Refuse a center cell wholly outside the image, instead of the old 1px edge crop.
++    scale = min(viewport / image.width, viewport / image.height) * values["zoom"]
++    cx = image.width / 2 - values["panX"] / scale
++    cy = image.height / 2 - values["panY"] / scale
++    half = viewport / (6 * scale)
++    if cx + half <= 0 or cy + half <= 0 or cx - half >= image.width or cy - half >= image.height:
++        raise ValueError("Move the image under the center box before calculating")
++    box = compute_center_cell_crop_box(image, viewport, values["zoom"], values["panX"], values["panY"])
++    token = str(event.get("calc_token", ""))
++    if not token or len(token) > 128:
++        raise ValueError("Missing or invalid Calculate event token")
++    return box, values, token
+--- /dev/null
++++ b/component_layout/viewer_component/__init__.py
+@@ -0,0 +1,43 @@
++import os
++import streamlit.components.v1 as components
++
++_component = components.declare_component(
++    "parasitic_2027_viewer",
++    path=os.path.dirname(__file__),
++)
++
++def viewer_component(
++    image_b64: str,
++    viewport: int,
++    init_zoom: float,
++    init_panX: float,
++    init_panY: float,
++    theme_mode: str = "System",
++    key: str = "microscopy_viewer",
++    image_id: str = "",
++):
++    """
++    Use viewport=0 for browser-width auto sizing.
++
++    Returns dict ONLY when user presses Calculate on canvas:
++      {
++        "action": "calculate",
++        "calc_token": "<unique>",
++        "zoom": float,
++        "panX": float,
++        "panY": float,
++        "viewport": int
++      }
++    Otherwise returns None.
++    """
++    return _component(
++        image_b64=image_b64,
++        viewport=viewport,
++        init_zoom=init_zoom,
++        init_panX=init_panX,
++        init_panY=init_panY,
++        theme_mode=theme_mode,
++        image_id=image_id,
++        key=key,
++        default=None,
++    )
+--- /dev/null
++++ b/component_layout/viewer_component/index.html
+@@ -0,0 +1,655 @@
++<!doctype html>
++<html>
++<head>
++  <meta charset="utf-8"/>
++  <style>
++    :root {
++      color-scheme: light dark;
++      --canvas-bg: #eef1f7;
++      --text: #17131f;
++      --muted: #3f3949;
++      --glass: rgba(255,255,255,.84);
++      --glass-strong: rgba(255,255,255,.96);
++      --stroke: rgba(58,42,72,.58);
++      --accent: #60376f;
++      --accent-soft: rgba(214,188,233,.48);
++      --shadow: 0 18px 48px rgba(55,42,70,.24);
++      --grid-line: rgba(139,52,80,.82);
++      --center-line: rgba(96,55,111,1);
++      --center-fill: rgba(214,188,233,.30);
++    }
++
++    @media (prefers-color-scheme: dark) {
++      :root {
++        --canvas-bg: #15121f;
++        --text: #fffaff;
++        --muted: #e7deeb;
++        --glass: rgba(51,45,70,.88);
++        --glass-strong: rgba(61,53,82,.96);
++        --stroke: rgba(239,225,248,.46);
++        --accent: #e7c4fa;
++        --accent-soft: rgba(231,196,250,.26);
++        --shadow: 0 20px 58px rgba(2,1,7,.58);
++        --grid-line: rgba(255,177,196,.84);
++        --center-line: rgba(243,221,255,1);
++        --center-fill: rgba(231,196,250,.24);
++      }
++    }
++
++    /* GLASS REDESIGN: explicit modes override iframe system preference. */
++    :root[data-theme="light"] {
++      color-scheme: light;
++      --canvas-bg: #eef1f7;
++      --text: #17131f;
++      --muted: #3f3949;
++      --glass: rgba(255,255,255,.84);
++      --glass-strong: rgba(255,255,255,.96);
++      --stroke: rgba(58,42,72,.58);
++      --accent: #60376f;
++      --accent-soft: rgba(214,188,233,.48);
++      --shadow: 0 18px 48px rgba(55,42,70,.24);
++      --grid-line: rgba(139,52,80,.82);
++      --center-line: rgba(96,55,111,1);
++      --center-fill: rgba(214,188,233,.30);
++    }
++
++    :root[data-theme="dark"] {
++      color-scheme: dark;
++      --canvas-bg: #15121f;
++      --text: #fffaff;
++      --muted: #e7deeb;
++      --glass: rgba(51,45,70,.88);
++      --glass-strong: rgba(61,53,82,.96);
++      --stroke: rgba(239,225,248,.46);
++      --accent: #e7c4fa;
++      --accent-soft: rgba(231,196,250,.26);
++      --shadow: 0 20px 58px rgba(2,1,7,.58);
++      --grid-line: rgba(255,177,196,.84);
++      --center-line: rgba(243,221,255,1);
++      --center-fill: rgba(231,196,250,.24);
++    }
++
++    * { box-sizing: border-box; }
++
++    html,
++    body {
++      margin:0;
++      padding:0;
++      background:transparent;
++      color:var(--text);
++      overflow:hidden;
++      font-family:"Inter","Noto Sans Thai","Leelawadee UI","Segoe UI",system-ui,sans-serif;
++      font-size:16px;
++      line-height:1.5;
++    }
++
++    .wrap {
++      position:relative;
++      user-select:none;
++      width:max-content;
++      max-width:100%;
++      margin:0 auto;
++    }
++
++    canvas {
++      border-radius:18px;
++      background:var(--canvas-bg);
++      border:1px solid var(--stroke);
++      box-shadow:var(--shadow);
++      cursor:grab;
++      display:block;
++      touch-action:none;
++    }
++    canvas:active { cursor:grabbing; }
++
++    .hint {
++      position:absolute;
++      left:10px;
++      bottom:10px;
++      padding:7px 11px;
++      font-size:13px;
++      font-weight:600;
++      line-height:1.35;
++      color:var(--muted);
++      background:var(--glass);
++      border:1px solid var(--stroke);
++      border-radius:999px;
++      backdrop-filter:blur(14px) saturate(1.2);
++      -webkit-backdrop-filter:blur(14px) saturate(1.2);
++      pointer-events:none;
++    }
++
++    .btn {
++      min-height:40px;
++      padding:9px 13px;
++      font-size:13px;
++      font-weight:700;
++      line-height:1.3;
++      color:var(--text);
++      background:var(--glass-strong);
++      border:1px solid var(--stroke);
++      border-radius:14px;
++      backdrop-filter:blur(14px) saturate(1.2);
++      -webkit-backdrop-filter:blur(14px) saturate(1.2);
++      cursor:pointer;
++      transition: background .12s ease, border-color .12s ease, transform .06s ease;
++    }
++    .btn:hover {
++      background:var(--accent-soft);
++      border-color:var(--accent);
++    }
++    .btn:active { transform: translateY(1px); }
++
++    .calc-btn {
++      position:absolute;
++      right:10px;
++      top:10px;
++      z-index:5;
++    }
++
++    .controls {
++      position:absolute;
++      right:10px;
++      bottom:10px;
++      z-index:5;
++      display:flex;
++      gap:10px;
++      align-items:flex-end;
++      pointer-events:auto;
++    }
++
++    .ctrl-card {
++      background:var(--glass);
++      border:1px solid var(--stroke);
++      border-radius:14px;
++      padding:8px;
++      backdrop-filter:blur(14px) saturate(1.2);
++      -webkit-backdrop-filter:blur(14px) saturate(1.2);
++      box-shadow:0 10px 28px rgba(0,0,0,.12);
++    }
++
++    .ctrl-title {
++      color:var(--muted);
++      font-size:12px;
++      font-weight:800;
++      line-height:1.3;
++      letter-spacing:.04em;
++      margin:0 0 6px 0;
++      text-align:center;
++    }
++
++    .dpad {
++      display:grid;
++      grid-template-columns:40px 40px 40px;
++      grid-template-rows:40px 40px 40px;
++      gap:6px;
++      align-items:center;
++      justify-items:center;
++    }
++
++    .icon-btn,
++    .zoom-btn {
++      padding:0;
++      border-radius:12px;
++      line-height:1;
++      display:flex;
++      align-items:center;
++      justify-content:center;
++      background:var(--glass-strong);
++      border:1px solid var(--stroke);
++      color:var(--text);
++      cursor:pointer;
++      transition: background .12s ease, border-color .12s ease, transform .06s ease;
++    }
++    .icon-btn {
++      width:40px;
++      height:40px;
++      font-size:17px;
++    }
++    .zoom-btn {
++      width:46px;
++      height:40px;
++      font-size:18px;
++      font-weight:800;
++    }
++    .icon-btn:hover,
++    .zoom-btn:hover {
++      background:var(--accent-soft);
++      border-color:var(--accent);
++    }
++    .icon-btn:active,
++    .zoom-btn:active { transform: translateY(1px); }
++
++    .icon-btn.center-dot {
++      cursor:default;
++      background:rgba(127,127,127,.10);
++      color:var(--muted);
++    }
++
++    .empty {
++      width:40px;
++      height:40px;
++    }
++
++    .zoom-stack {
++      display:flex;
++      flex-direction:column;
++      gap:6px;
++      align-items:center;
++    }
++
++    .zoom-readout {
++      min-width:44px;
++      text-align:center;
++      font-size:12px;
++      line-height:1.3;
++      color:var(--muted);
++      font-weight:700;
++      margin-top:2px;
++    }
++
++    @media (max-width: 360px) {
++      .hint { display:none; }
++      .controls {
++        right:8px;
++        bottom:8px;
++        gap:6px;
++      }
++      .ctrl-card { padding:6px; }
++      .dpad {
++        grid-template-columns:36px 36px 36px;
++        grid-template-rows:36px 36px 36px;
++      }
++      .icon-btn,
++      .empty {
++        width:36px;
++        height:36px;
++      }
++      .zoom-btn {
++        width:42px;
++        height:36px;
++      }
++    }
++  </style>
++<link rel="stylesheet" href="viewer.css"/>
++</head>
++<body>
++  <div class="wrap">
++    <canvas id="cv" tabindex="0" aria-label="Microscopy image. Drag to pan, use wheel or plus and minus to zoom."></canvas>
++
++    <div class="hint" id="selectionStatus" role="status">Drag / zoom the target into the center box, then Calculate.</div>
++
++    <button id="calcBtn" class="btn calc-btn" type="button">Calculate</button>
++
++    <!-- New control buttons -->
++    <div class="controls">
++      <div class="ctrl-card">
++        <div class="ctrl-title">PAN</div>
++        <div class="dpad">
++          <div class="empty"></div>
++          <button id="panUpBtn" class="icon-btn" type="button" title="Pan up">▲</button>
++          <div class="empty"></div>
++
++          <button id="panLeftBtn" class="icon-btn" type="button" title="Pan left">◀</button>
++          <div class="icon-btn center-dot" title="Center guide">•</div>
++          <button id="panRightBtn" class="icon-btn" type="button" title="Pan right">▶</button>
++
++          <div class="empty"></div>
++          <button id="panDownBtn" class="icon-btn" type="button" title="Pan down">▼</button>
++          <div class="empty"></div>
++        </div>
++      </div>
++
++      <div class="ctrl-card">
++        <div class="ctrl-title">ZOOM</div>
++        <div class="zoom-stack">
++          <button id="zoomInBtn" class="zoom-btn" type="button" title="Zoom in">+</button>
++          <button id="zoomOutBtn" class="zoom-btn" type="button" title="Zoom out">−</button>
++          <div id="zoomReadout" class="zoom-readout">100%</div>
++        </div>
++      </div>
++    </div>
++  </div>
++
++<script>
++  // ---- minimal Streamlit component protocol (no React) ----
++  function sendMessage(type, data){
++    const out = Object.assign({ isStreamlitMessage:true, type:type }, data);
++    window.parent.postMessage(out, "*");
++  }
++  function componentReady(){ sendMessage("streamlit:componentReady", { apiVersion: 1 }); }
++  function setFrameHeight(h){ sendMessage("streamlit:setFrameHeight", { height:h }); }
++  function setComponentValue(obj){
++    // Send only on Calculate click to trigger exactly 1 rerun
++    sendMessage("streamlit:setComponentValue", { value: obj, dataType: "json" });
++  }
++
++  // Unique token generator: timestamp + random
++  function makeCalcToken(){
++    const ts = Date.now().toString(36);
++    const rnd = Math.random().toString(36).slice(2, 10);
++    return ts + "-" + rnd;
++  }
++
++  const canvas = document.getElementById("cv");
++  const ctx = canvas.getContext("2d");
++  const img = new Image();
++  const zoomReadout = document.getElementById("zoomReadout");
++
++  // Frontend-only state (NO sending during zoom/pan)
++  let vp = 0;
++  let imageId = "";
++  function markDirty(){ document.getElementById("selectionStatus").textContent = "Selection changed — Calculate to update results."; }
++  let autoViewport = true;
++  let zoom = 1.0, panX = 0.0, panY = 0.0;
++  let dragging = false, lastX = 0, lastY = 0;
++
++  // Control tuning
++  const AUTO_VIEWPORT_MIN = 280;
++  const AUTO_VIEWPORT_MAX = 900;
++  const AUTO_VIEWPORT_GUTTER = 4;
++  const ZOOM_MIN = 0.15;
++  const ZOOM_MAX = 12.0;
++  const ZOOM_IN_FACTOR = 1.10;
++  const ZOOM_OUT_FACTOR = 1.0 / ZOOM_IN_FACTOR; // ~0.909
++  const PAN_STEP_RATIO = 0.06; // 6% of viewport per click
++
++  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
++
++  function cssVar(name, fallback){
++    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
++  }
++
++  function computeAutoViewport(){
++    const width = Math.floor(document.documentElement.clientWidth || window.innerWidth || 600);
++    const usable = Math.max(1, width - AUTO_VIEWPORT_GUTTER);
++    const minSize = Math.min(AUTO_VIEWPORT_MIN, usable);
++    return Math.round(clamp(usable, minSize, AUTO_VIEWPORT_MAX));
++  }
++
++  function updateZoomReadout(){
++    const pct = Math.round(zoom * 100);
++    zoomReadout.textContent = `${pct}%`;
++  }
++
++  function resizeCanvas(newVp, scalePan=false){
++    const available = Math.max(
++      1,
++      Math.floor((document.documentElement.clientWidth || window.innerWidth || 600) - AUTO_VIEWPORT_GUTTER)
++    );
++    const minSize = Math.min(AUTO_VIEWPORT_MIN, available);
++    newVp = Math.round(clamp(Number(newVp) || 600, minSize, AUTO_VIEWPORT_MAX));
++    if(newVp === vp) {
++      setFrameHeight(vp + 8);
++      return;
++    }
++    if(scalePan && vp > 0){
++      const ratio = newVp / vp;
++      panX *= ratio;
++      panY *= ratio;
++    }
++    vp = newVp;
++    canvas.width = vp;
++    canvas.height = vp;
++    canvas.style.width = vp + "px";
++    canvas.style.height = vp + "px";
++
++    const wrap = document.querySelector(".wrap");
++    wrap.style.width = vp + "px";
++    wrap.style.height = vp + "px";
++
++    setFrameHeight(vp + 8);
++    updateZoomReadout();
++  }
++
++  function draw(){
++    ctx.clearRect(0,0,vp,vp);
++    ctx.fillStyle = cssVar("--canvas-bg", "#1c1a29");
++    ctx.fillRect(0,0,vp,vp);
++
++    if(!img.complete || !img.naturalWidth || !img.naturalHeight){
++      requestAnimationFrame(draw);
++      return;
++    }
++
++    const w0 = img.naturalWidth, h0 = img.naturalHeight;
++    const baseScale = Math.min(vp / w0, vp / h0);
++    const scale = baseScale * zoom;
++
++    const cx = vp/2, cy = vp/2;
++    const dw = w0 * scale, dh = h0 * scale;
++    const dx = cx - dw/2 + panX;
++    const dy = cy - dh/2 + panY;
++
++    ctx.imageSmoothingEnabled = true;
++    ctx.imageSmoothingQuality = "high";
++    ctx.drawImage(img, dx, dy, dw, dh);
++
++    // 3x3 grid
++    const step = vp/3;
++    ctx.save();
++    ctx.lineWidth = 1;
++    ctx.strokeStyle = cssVar("--grid-line", "rgba(240, 166, 183, 0.62)");
++    for(let i=1;i<=2;i++){
++      const p = step*i;
++      ctx.beginPath(); ctx.moveTo(p,0); ctx.lineTo(p,vp); ctx.stroke();
++      ctx.beginPath(); ctx.moveTo(0,p); ctx.lineTo(vp,p); ctx.stroke();
++    }
++    ctx.restore();
++
++    // center cell overlay
++    ctx.save();
++    ctx.lineWidth = 2;
++    ctx.strokeStyle = cssVar("--center-line", "rgba(218, 185, 242, 0.96)");
++    ctx.fillStyle = cssVar("--center-fill", "rgba(218, 185, 242, 0.14)");
++    ctx.beginPath(); ctx.rect(step,step,step,step);
++    ctx.fill(); ctx.stroke();
++    ctx.restore();
++
++    requestAnimationFrame(draw);
++  }
++
++  // Keep point under cursor fixed while zooming (general utility)
++  function zoomAboutScreenPoint(mx, my, factor){
++    if(!img.complete || !img.naturalWidth || !img.naturalHeight) return;
++
++    const w0 = img.naturalWidth, h0 = img.naturalHeight;
++    const baseScale = Math.min(vp / w0, vp / h0);
++    const oldScale = baseScale * zoom;
++
++    const cx = vp/2, cy = vp/2;
++
++    // Screen -> image (before zoom)
++    const ix = (mx - cx - panX) / oldScale + (w0/2);
++    const iy = (my - cy - panY) / oldScale + (h0/2);
++
++    zoom = clamp(zoom * factor, ZOOM_MIN, ZOOM_MAX);
++
++    const newScale = baseScale * zoom;
++    // Recompute pan so the same image point stays under the same screen point
++    panX = mx - cx - (ix - (w0/2)) * newScale;
++    panY = my - cy - (iy - (h0/2)) * newScale;
++
++    updateZoomReadout();
++    markDirty();
++  }
++
++  function zoomAboutCenter(factor){
++    zoomAboutScreenPoint(vp/2, vp/2, factor);
++  }
++
++  function panBy(dx, dy){
++    panX += dx;
++    panY += dy;
++    markDirty();
++  }
++
++  function panStep(){
++    return Math.max(8, Math.round(vp * PAN_STEP_RATIO));
++  }
++
++  // Zoom about mouse position (NO sending)
++  function onWheel(e){
++    e.preventDefault();
++    const rect = canvas.getBoundingClientRect();
++    const mx = e.clientX - rect.left;
++    const my = e.clientY - rect.top;
++    const factor = (e.deltaY < 0) ? 1.08 : 0.92;
++    zoomAboutScreenPoint(mx, my, factor);
++  }
++
++  function onDown(e){
++    canvas.focus();
++    dragging = true;
++    lastX = e.clientX;
++    lastY = e.clientY;
++    if (canvas.setPointerCapture) {
++      try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
++    }
++  }
++
++  function onMove(e){
++    if(!dragging) return;
++    const dx = e.clientX - lastX;
++    const dy = e.clientY - lastY;
++    lastX = e.clientX;
++    lastY = e.clientY;
++    panX += dx;
++    panY += dy;
++    markDirty();
++  }
++
++  function onUp(){
++    dragging = false;
++  }
++
++  canvas.addEventListener("wheel", onWheel, { passive:false });
++  canvas.addEventListener("pointerdown", onDown);
++  canvas.addEventListener("pointermove", onMove);
++  canvas.addEventListener("pointerup", onUp);
++  canvas.addEventListener("pointercancel", onUp);
++  canvas.addEventListener("pointerleave", onUp);
++
++  // ---- Button controls (NEW) ----
++  document.getElementById("panLeftBtn").addEventListener("click", () => {
++    panBy(panStep(), 0); // move image right => target appears left under center guide
++  });
++
++  document.getElementById("panRightBtn").addEventListener("click", () => {
++    panBy(-panStep(), 0); // move image left => target appears right
++  });
++
++  document.getElementById("panUpBtn").addEventListener("click", () => {
++    panBy(0, panStep()); // move image down => target appears up
++  });
++
++  document.getElementById("panDownBtn").addEventListener("click", () => {
++    panBy(0, -panStep()); // move image up => target appears down
++  });
++
++  document.getElementById("zoomInBtn").addEventListener("click", () => {
++    zoomAboutCenter(ZOOM_IN_FACTOR);
++  });
++
++  document.getElementById("zoomOutBtn").addEventListener("click", () => {
++    zoomAboutCenter(ZOOM_OUT_FACTOR);
++  });
++
++  // Optional keyboard shortcuts when component focused/active
++  window.addEventListener("keydown", (e) => {
++    // avoid hijacking typing if future inputs exist
++    const tag = (document.activeElement && document.activeElement.tagName || "").toLowerCase();
++    if (tag === "input" || tag === "textarea") return;
++
++    const step = panStep();
++
++    switch (e.key) {
++      case "ArrowLeft":
++        e.preventDefault(); panBy(step, 0); break;
++      case "ArrowRight":
++        e.preventDefault(); panBy(-step, 0); break;
++      case "ArrowUp":
++        e.preventDefault(); panBy(0, step); break;
++      case "ArrowDown":
++        e.preventDefault(); panBy(0, -step); break;
++      case "+":
++      case "=":
++        e.preventDefault(); zoomAboutCenter(ZOOM_IN_FACTOR); break;
++      case "-":
++      case "_":
++        e.preventDefault(); zoomAboutCenter(ZOOM_OUT_FACTOR); break;
++      default:
++        break;
++    }
++  });
++
++  // Calculate button: SEND ONCE -> triggers exactly 1 rerun
++  document.getElementById("calcBtn").addEventListener("click", () => {
++    if(!img.complete || !img.naturalWidth) return;
++    document.getElementById("selectionStatus").textContent = "Results use the last calculated center box.";
++    const token = makeCalcToken();
++    setComponentValue({
++      image_id: imageId,
++      action: "calculate",
++      calc_token: token,
++      zoom: zoom,
++      panX: panX,
++      panY: panY,
++      viewport: vp
++    });
++  });
++
++  // Receive args from Python (render)
++  function onRender(event){
++    if(event.source !== window.parent || event.data.type !== "streamlit:render") return;
++    const args = event.data.args || {};
++    imageId = args.image_id || "";
++
++    // Mirror the parent app override; an empty value follows system CSS.
++    const requestedTheme = String(args.theme_mode || "System").toLowerCase();
++    document.documentElement.dataset.theme =
++      requestedTheme === "light" || requestedTheme === "dark"
++        ? requestedTheme
++        : "";
++
++    const rawViewport = Number(args.viewport);
++    autoViewport = !Number.isFinite(rawViewport) || rawViewport <= 0;
++    const newVp = autoViewport ? computeAutoViewport() : rawViewport;
++    if(newVp !== vp) resizeCanvas(newVp);
++
++    // init from Python only (first load or python reset)
++    zoom = Number(args.init_zoom ?? zoom);
++    panX = Number(args.init_panX ?? panX);
++    panY = Number(args.init_panY ?? panY);
++    updateZoomReadout();
++
++    const b64 = args.image_b64 || "";
++    img.src = "data:image/png;base64," + b64;
++  }
++
++  window.addEventListener("message", onRender);
++
++  let resizeTimer = null;
++  function handleViewportResize(){
++    if(!autoViewport) return;
++    window.clearTimeout(resizeTimer);
++    resizeTimer = window.setTimeout(() => {
++      const nextVp = computeAutoViewport();
++      resizeCanvas(nextVp, true);
++      markDirty();
++    }, 80);
++  }
++  window.addEventListener("resize", handleViewportResize);
++  if("ResizeObserver" in window){
++    const ro = new ResizeObserver(handleViewportResize);
++    ro.observe(document.documentElement);
++  }
++
++  // init
++  componentReady();
++  resizeCanvas(computeAutoViewport());
++  updateZoomReadout();
++  requestAnimationFrame(draw);
++</script>
++</body>
++</html>
+--- /dev/null
++++ b/component_layout/viewer_component/viewer.css
+@@ -0,0 +1,10 @@
++/* Existing 2026 viewer controls with the 2027 clinical pastel palette. */
++:root[data-theme="light"] {
++  --canvas-bg:#EAF1EC; --text:#203C36; --muted:#536B63;
++  --glass:#F8FAF7E8; --glass-strong:#E0ECE8; --stroke:#8BA39B;
++  --accent:#20665C; --accent-soft:#D1E5DE; --shadow:0 8px 20px #203C3615;
++  --grid-line:#809A91; --center-line:#20665C; --center-fill:#C6E1D526;
++}
++.hint {max-width:55%;border-radius:10px;}
++button:focus-visible,canvas:focus-visible {outline:3px solid #20665C;outline-offset:2px;}
++@media(prefers-reduced-motion:reduce){button{transition:none!important}}
+--- a/component_theme/styles.css
++++ b/component_theme/styles.css
+@@ -10,9 +10,19 @@
+ .st-key-card_nav button {min-height:85px;justify-content:flex-start;padding:18px;border-color:var(--line);transition:transform .15s,box-shadow .15s;}
+ .st-key-card_nav button:hover {transform:translateY(-3px);box-shadow:0 8px 18px #203c3610;}
+ .st-key-card_nav button:focus-visible {outline:3px solid var(--teal);outline-offset:3px;}
+-.st-key-card_nav button[kind="secondary"] {background:var(--sage);color:var(--ink);}
+-.st-key-card_nav .st-key-nav_2 button[kind="secondary"] {background:var(--coral);}
+-.st-key-card_nav .st-key-nav_3 button[kind="secondary"] {background:#ECEAF5;}
++/* Six distinct hues per Home/Atlas screen; active state keeps the card's hue. */
++:root { --button-home:#D5E9E5; --button-atlas:#E0E9D3; --button-detector:#F3DED5;
++        --button-exam:#E6DEF0; --button-about:#DAE5F2; --button-action:#F2E8C9; }
++.st-key-nav_0 {--card-color:var(--button-home)}
++.st-key-nav_1 {--card-color:var(--button-atlas)}
++.st-key-nav_2 {--card-color:var(--button-detector)}
++.st-key-nav_3 {--card-color:var(--button-exam)}
++.st-key-nav_4 {--card-color:var(--button-about)}
++.st-key-card_nav button[kind] {background:var(--card-color);color:var(--ink);}
++.st-key-card_nav button[kind="primary"] {border:2px solid var(--teal);box-shadow:inset 0 -4px 0 var(--teal);}
++.st-key-card_nav button[kind]:hover {background:var(--card-color);filter:brightness(.97);color:var(--ink);}
++.st-key-home_atlas_action button[kind],.st-key-atlas_practice_action button[kind] {background:var(--button-action);color:var(--ink);border:1px solid #9C8D5D;}
++.st-key-home_atlas_action button[kind]:hover,.st-key-atlas_practice_action button[kind]:hover {background:var(--button-action);filter:brightness(.97);}
+ .hero {background:linear-gradient(115deg,var(--sage),#F0F4E8);padding:38px;border:1px solid var(--line);border-radius:24px;margin-bottom:24px;position:relative;overflow:hidden;}
+ .hero h2 {font:500 clamp(30px,4vw,48px)/1.12 Georgia,serif;color:var(--ink);max-width:730px;margin:12px 0 18px;letter-spacing:-1.2px;}
+ .hero p {color:var(--muted);max-width:680px;font-size:16px;line-height:1.7;}
+--- a/constraints-tested.txt
++++ b/constraints-tested.txt
+@@ -7,3 +7,5 @@
+ pandas==3.0.3
+ altair==6.1.0
+ ultralytics==8.4.53
++torch==2.12.0
++torchvision==0.27.0
+--- a/content.py
++++ b/content.py
+@@ -15,6 +15,10 @@
+             if not isinstance(item[field], list):
+                 raise ValueError(f"{item['id']}: {field} must be a list")
+         item["folder"] = path.parent
++        item.setdefault("classification_label", item["id"].replace("_", " "))
++        item.setdefault("classifier_labels", [])
++        if not isinstance(item["classification_label"], str) or not item["classification_label"] or not isinstance(item["classifier_labels"], list) or any(not isinstance(label, str) or not label for label in item["classifier_labels"]):
++            raise ValueError(f"Invalid classification metadata in {item['id']}")
+         entries.append(item)
+     return entries
+ 
+--- a/docs/CONTENT_TEMPLATES.md
++++ b/docs/CONTENT_TEMPLATES.md
+@@ -9,6 +9,8 @@
+   "id": "species_name",
+   "name": "Species name",
+   "common_name": "Common name",
++  "classification_label": "species name",
++  "classifier_labels": [],
+   "group": "Nematodes",
+   "description": "Concise, sourced description.",
+   "morphology": ["A sourced identification feature."],
+@@ -19,6 +21,13 @@
+   "reviewed_on": "2026-09-07"
+ }
+ ```
++
++`classification_label` is the educational taxonomy label. `classifier_labels`
++maps only to actual labels in the bundled models; leave it empty for unsupported
++species. Adding Atlas content must not expand or reorder model output classes.
++The current Atlas has nine entries (including a Taenia species-group entry) and
++27 questions. Source links support biological descriptions and the Thailand focus;
++these are not current national prevalence estimates.
+ 
+ Use lowercase snake_case identifiers matching the directory exactly. Image paths
+ must resolve inside the species folder; parent-directory traversal is rejected.
+@@ -53,5 +62,9 @@
+ Run `python -m pytest tests/test_content.py -q` after additions. The bundled
+ `scripts/seed_content.py` is the original content generator, not a runtime
+ requirement. Re-running it overwrites the four bundled entries, their diagrams,
+-their quizzes, and the contracts for `.keras` files present in `component_ai/`;
++their quizzes, and the contracts for `.keras` files present in `component_ai/keras/`;
+ do not run it over hand-edited content or newly added model contracts.
++
++`scripts/expand_content.py` adds the five Thailand-focused entries if absent and
++adds classification metadata to existing entries. It preserves existing entry,
++quiz and illustration files. Run it after reseeding the base collection.
+--- /dev/null
++++ b/docs/REFACTOR_NOTES.md
+@@ -0,0 +1,98 @@
++# Refactor handoff
++
++## Changes by page
++
++| Page | Change |
++|---|---|
++| Home | Five navigation buttons keep distinct teal, sage, coral, lavender and blue hues. The Atlas action uses pale ochre, a sixth hue. Dark text, focus outlines and active borders preserve readability. Counts now show 9 entries, 27 questions, 6 Keras models and 8 samples. |
++| Parasite Atlas | Same distinct navigation hues and a separate pale-ochre practice action. Added Necator americanus, Ancylostoma ceylanicum, Taenia spp., Fasciolopsis buski and Strongyloides stercoralis. Each has an original labeled SVG schematic, biology, life cycle, clinical context, references and classification metadata. |
++| Examination | Five corresponding quiz files add 15 questions, for 27 total. Existing discovery, scoring, explanations, retry and Atlas handoff work without duplicated page logic. |
++| Parasite Detector | Restored the 2026 pan/zoom/center-cell Calculate component, removed pixel-bound sliders and the old analysis-method bar, moved all Keras assets/contracts, added drop-in YOLO and Faster R-CNN interfaces, and matched Majority vote to Analysis results with the same native subheader element. |
++
++New reference entries do not add outputs to a trained classifier. `classifier_labels`
++is empty for unsupported entries; the OV mapping alone points to an existing
++species-specific Keras class. Taenia remains a group-level entry because eggs
++cannot resolve its species. Hookworm entries likewise explain that eggs overlap.
++Thailand prioritization is educational, not a claim about current national
++prevalence. Relevant sources include the [Thai hookworm study](https://pmc.ncbi.nlm.nih.gov/articles/PMC3916468/),
++[Thai fasciolopsiasis report](https://pubmed.ncbi.nlm.nih.gov/12466749/), and each
++entry's CDC DPDx reference.
++
++## Code deliverable
++
++`docs/refactor.patch` contains a unified diff for every changed/new/removed text
++file, with `--- a/<path>` and `+++ b/<path>` labels. It is relative to the project
++directory and compares against the exact on-disk state before this refactor,
++not a Git commit. `docs/changed_files.json` is the machine-readable inventory.
++All updated files are already applied in the project; do not apply the patch a
++second time. Six binary model moves are recorded in `docs/model_moves.json` with
++SHA-256 hashes; binary weights are not reproduced as text in the patch.
++
++## Model folders
++
++```text
++component_ai/
++├── keras/
++│   ├── __init__.py
++│   ├── README.md
++│   ├── img_classified_dataset1_cnn.keras
++│   ├── img_classified_dataset1_cnn.json
++│   ├── img_classified_dataset1_paca.keras
++│   ├── img_classified_dataset1_paca.json
++│   ├── img_classified_dataset2_cnn.keras
++│   ├── img_classified_dataset2_cnn.json
++│   ├── img_classified_dataset2_paca.keras
++│   ├── img_classified_dataset2_paca.json
++│   ├── img_classified_transf12_cnn.keras
++│   ├── img_classified_transf12_cnn.json
++│   ├── img_classified_transf12_paca.keras
++│   └── img_classified_transf12_paca.json
++├── yolo/
++│   ├── __init__.py
++│   ├── service.py
++│   ├── model.json
++│   ├── README.md
++│   └── weights/
++│       ├── PLACE_WEIGHTS_HERE.txt
++│       └── parasite_yolo11.pt          [expected future file, not supplied]
++└── rcnn/
++    ├── __init__.py
++    ├── model.json
++    ├── README.md
++    └── weights/
++        ├── PLACE_WEIGHTS_HERE.txt
++        └── parasite_fasterrcnn.pth     [expected future file, not supplied]
++```
++
++YOLO accepts a trained Ultralytics object-detection `.pt` checkpoint and uses its
++embedded labels. Faster R-CNN accepts a torchvision ResNet50-FPN v1/v2 state dict
++(bare or inside `model_state_dict`/`state_dict`). Match its architecture, labels,
++resize parameters and head size in `model.json`; background is class zero. Other
++architectures are not interchangeable checkpoints. Dropping compatible weights
++at the manifest path requires no Python changes. No empty `.pt`/`.pth` files or
++fake predictions are provided: placeholders are clearly named text files.
++
++## Dependencies
++
++Base/Keras/YOLO dependencies are unchanged. Add `requirements-rcnn.txt` for
++`torch>=2.6,<3` and `torchvision>=0.21,<1` using a compatible release pair.
++`constraints-tested.txt` records the installed pair (2.12.0 / 0.27.0). This refactor
++did not install or upgrade the user's environment. The reused viewer needs only
++Streamlit and Pillow already present. Node is optional for the JavaScript contract
++test, not an application runtime dependency.
++
++## Detector verification
++
++| Requested fix | Verification performed | Limit |
++|---|---|---|
++| a. YOLO scaffold | Manifest/path tests, missing-weight UI disables Detect objects; existing RGB/box adapter test passes. | No trained parasite YOLO weights were supplied. |
++| b. Faster R-CNN scaffold | Safe loader arguments/no pretrained download/strict state loading tested with fixtures. Actual Torch tensors and torchvision NMS tested for RGB scaling, thresholds, clipping and class labels. Missing-weight UI verified. | No trained Faster R-CNN checkpoint was supplied. |
++| c. Keras relocation | All six model hashes match original assets; discovery and contracts resolve `keras/`; all six ran inference on a real sample crop with zero errors. | Execution is not clinical accuracy validation. |
++| d. Remove region bar | AppTest confirms no pixel sliders in Keras mode. Removed old segmented method control; the model-family dropdown distinguishes classification from full-image detectors. | The pan/zoom controls inside the requested 2026 viewer remain intentionally. |
++| e. Interactive selection | Reused HTML/JS and crop helper; Node contract test simulates drag, wheel/button zoom, Calculate, image binding and no pan/zoom inference. Python tests verify matching crop coordinates, invalid-event rejection, duplicate-token suppression and smaller crops when zoomed. | Browser automation had no available browser; no rendered drag or visual screenshot test is claimed. |
++| f. Font consistency | Both Analysis results and Majority vote use `st.subheader`; AppTest asserts both subheader elements. | Rendered font appearance was not visually inspected. |
++
++28 Python tests passed; the Node viewer contract test and Python compilation
++passed. HTTP `/_stcore/health` returned `ok` on a temporary local verification
++server. That server was stopped after checks. The 2026 source project was not
++edited. No deployment or clinical validation was performed.
+--- /dev/null
++++ b/pages/parasites/ancylostoma_ceylanicum/content.json
+@@ -0,0 +1,51 @@
++{
++  "schema_version": 1,
++  "id": "ancylostoma_ceylanicum",
++  "name": "Ancylostoma ceylanicum",
++  "common_name": "Zoonotic intestinal hookworm",
++  "group": "Nematodes",
++  "description": "A zoonotic hookworm of particular relevance to Southeast Asia; humans, dogs and cats can be hosts.",
++  "morphology": [
++    "Routine egg morphology does not establish species identity."
++  ],
++  "clinical_significance": "Interpret hookworm eggs at group level unless species is confirmed by additional methods.",
++  "life_cycle": [
++    {
++      "stage": "Environment",
++      "detail": "Eggs pass into soil."
++    },
++    {
++      "stage": "Larvae",
++      "detail": "Larvae develop to infectivity."
++    },
++    {
++      "stage": "Exposure",
++      "detail": "Skin penetration or ingestion can transmit larvae."
++    },
++    {
++      "stage": "Intestine",
++      "detail": "Adults establish and shed eggs."
++    }
++  ],
++  "images": [
++    {
++      "file": "morphology.svg",
++      "caption": "Original schematic — not to scale; not a microscopy image.",
++      "credit": "Parasitic Platform 2027",
++      "license": "CC0-1.0"
++    }
++  ],
++  "references": [
++    {
++      "title": "CDC DPDx — Hookworm",
++      "url": "https://www.cdc.gov/dpdx/hookworm/index.html"
++    },
++    {
++      "title": "Molecular detection of hookworms in Thailand (2014)",
++      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3916468/"
++    }
++  ],
++  "reviewed_on": "2026-09-07",
++  "classification_label": "ancylostoma ceylanicum",
++  "classifier_labels": []
++}
+--- a/pages/parasites/ascaris_lumbricoides/content.json
++++ b/pages/parasites/ascaris_lumbricoides/content.json
+@@ -43,5 +43,7 @@
+       "title": "CDC DPDx — Ascariasis",
+       "url": "https://www.cdc.gov/dpdx/ascariasis/index.html"
+     }
+-  ]
++  ],
++  "classification_label": "ascaris lumbricoides",
++  "classifier_labels": []
+ }
+--- /dev/null
++++ b/pages/parasites/fasciolopsis_buski/content.json
+@@ -0,0 +1,52 @@
++{
++  "schema_version": 1,
++  "id": "fasciolopsis_buski",
++  "name": "Fasciolopsis buski",
++  "common_name": "Giant intestinal fluke",
++  "group": "Trematodes",
++  "description": "An intestinal fluke transmitted by metacercariae on aquatic plants. Humans and pigs are definitive hosts.",
++  "morphology": [
++    "Large, broadly oval operculated eggs.",
++    "Eggs measure about 130–150 × 60–90 µm and resemble Fasciola eggs."
++  ],
++  "clinical_significance": "Heavy infections may cause diarrhea, abdominal pain or obstruction. Egg microscopy alone cannot reliably separate Fasciolopsis from Fasciola.",
++  "life_cycle": [
++    {
++      "stage": "Water",
++      "detail": "Eggs embryonate and release miracidia."
++    },
++    {
++      "stage": "Snail",
++      "detail": "Larval stages develop in a snail."
++    },
++    {
++      "stage": "Plants",
++      "detail": "Cercariae encyst on aquatic vegetation."
++    },
++    {
++      "stage": "Intestine",
++      "detail": "Ingested metacercariae mature into intestinal adults."
++    }
++  ],
++  "images": [
++    {
++      "file": "morphology.svg",
++      "caption": "Original schematic — not to scale; not a microscopy image.",
++      "credit": "Parasitic Platform 2027",
++      "license": "CC0-1.0"
++    }
++  ],
++  "references": [
++    {
++      "title": "CDC DPDx — Fasciolopsiasis",
++      "url": "https://www.cdc.gov/dpdx/fasciolopsiasis/index.html"
++    },
++    {
++      "title": "Fasciolopsis buski in an endemic area in Thailand (2002)",
++      "url": "https://pubmed.ncbi.nlm.nih.gov/12466749/"
++    }
++  ],
++  "reviewed_on": "2026-09-07",
++  "classification_label": "fasciolopsis buski",
++  "classifier_labels": []
++}
+--- a/pages/parasites/giardia_duodenalis/content.json
++++ b/pages/parasites/giardia_duodenalis/content.json
+@@ -43,5 +43,7 @@
+       "title": "CDC DPDx — Giardiasis",
+       "url": "https://www.cdc.gov/dpdx/giardiasis/index.html"
+     }
+-  ]
++  ],
++  "classification_label": "giardia duodenalis",
++  "classifier_labels": []
+ }
+--- /dev/null
++++ b/pages/parasites/necator_americanus/content.json
+@@ -0,0 +1,52 @@
++{
++  "schema_version": 1,
++  "id": "necator_americanus",
++  "name": "Necator americanus",
++  "common_name": "Human hookworm",
++  "group": "Nematodes",
++  "description": "A human intestinal hookworm; infective larvae penetrate skin.",
++  "morphology": [
++    "Thin-shelled eggs contain cleavage-stage cells.",
++    "Eggs cannot reliably distinguish Necator from Ancylostoma."
++  ],
++  "clinical_significance": "Adult attachment can cause blood loss and iron deficiency anemia.",
++  "life_cycle": [
++    {
++      "stage": "Soil",
++      "detail": "Eggs hatch and larvae mature."
++    },
++    {
++      "stage": "Skin",
++      "detail": "Infective larvae penetrate exposed skin."
++    },
++    {
++      "stage": "Migration",
++      "detail": "Larvae pass through lungs and are swallowed."
++    },
++    {
++      "stage": "Intestine",
++      "detail": "Adults attach and produce eggs."
++    }
++  ],
++  "images": [
++    {
++      "file": "morphology.svg",
++      "caption": "Original schematic — not to scale; not a microscopy image.",
++      "credit": "Parasitic Platform 2027",
++      "license": "CC0-1.0"
++    }
++  ],
++  "references": [
++    {
++      "title": "CDC DPDx — Hookworm",
++      "url": "https://www.cdc.gov/dpdx/hookworm/index.html"
++    },
++    {
++      "title": "Molecular detection of hookworms in Thailand (2014)",
++      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3916468/"
++    }
++  ],
++  "reviewed_on": "2026-09-07",
++  "classification_label": "necator americanus",
++  "classifier_labels": []
++}
+--- a/pages/parasites/opisthorchis_viverrini/content.json
++++ b/pages/parasites/opisthorchis_viverrini/content.json
+@@ -43,5 +43,9 @@
+       "title": "CDC DPDx — Opisthorchiasis",
+       "url": "https://www.cdc.gov/dpdx/opisthorchiasis/index.html"
+     }
++  ],
++  "classification_label": "opisthorchis viverrini",
++  "classifier_labels": [
++    "opisthorchis viverrini egg"
+   ]
+ }
+--- /dev/null
++++ b/pages/parasites/strongyloides_stercoralis/content.json
+@@ -0,0 +1,48 @@
++{
++  "schema_version": 1,
++  "id": "strongyloides_stercoralis",
++  "name": "Strongyloides stercoralis",
++  "common_name": "Intestinal threadworm",
++  "group": "Nematodes",
++  "description": "A soil-transmitted nematode capable of autoinfection and long-term persistence in a host.",
++  "morphology": [
++    "Rhabditiform larvae, rather than eggs, are usually detected in stool.",
++    "A short buccal cavity and prominent genital primordium help distinguish rhabditiform larvae from hookworm larvae."
++  ],
++  "clinical_significance": "Immunosuppression can permit hyperinfection or dissemination. A negative routine stool examination does not exclude infection.",
++  "life_cycle": [
++    {
++      "stage": "Soil",
++      "detail": "Larvae develop through direct or free-living pathways."
++    },
++    {
++      "stage": "Skin",
++      "detail": "Filariform larvae penetrate skin."
++    },
++    {
++      "stage": "Intestine",
++      "detail": "Parasitic females produce eggs that hatch."
++    },
++    {
++      "stage": "Persistence",
++      "detail": "Larvae leave in stool or participate in autoinfection."
++    }
++  ],
++  "images": [
++    {
++      "file": "morphology.svg",
++      "caption": "Original schematic — not to scale; not a microscopy image.",
++      "credit": "Parasitic Platform 2027",
++      "license": "CC0-1.0"
++    }
++  ],
++  "references": [
++    {
++      "title": "CDC DPDx — Strongyloidiasis",
++      "url": "https://www.cdc.gov/dpdx/strongyloidiasis/index.html"
++    }
++  ],
++  "reviewed_on": "2026-09-07",
++  "classification_label": "strongyloides stercoralis",
++  "classifier_labels": []
++}
+--- /dev/null
++++ b/pages/parasites/taenia_spp/content.json
+@@ -0,0 +1,48 @@
++{
++  "schema_version": 1,
++  "id": "taenia_spp",
++  "name": "Taenia spp.",
++  "common_name": "T. saginata, T. solium and T. asiatica",
++  "group": "Cestodes",
++  "description": "A species-group entry for intestinal tapeworms. T. asiatica occurs in Thailand. Egg appearance does not resolve species.",
++  "morphology": [
++    "Round eggs have a radially striated embryophore and a six-hooked oncosphere.",
++    "Use suitable proglottid, scolex or molecular findings to resolve species."
++  ],
++  "clinical_significance": "Taeniasis follows ingestion of cysticerci in meat. Ingestion of T. solium eggs can instead cause cysticercosis; these transmission routes must not be confused.",
++  "life_cycle": [
++    {
++      "stage": "Egg shedding",
++      "detail": "Humans pass eggs or proglottids."
++    },
++    {
++      "stage": "Animal host",
++      "detail": "Cattle or pigs ingest eggs."
++    },
++    {
++      "stage": "Larval stage",
++      "detail": "Cysticerci develop in the intermediate host."
++    },
++    {
++      "stage": "Human intestine",
++      "detail": "Ingested cysticerci develop into adult tapeworms."
++    }
++  ],
++  "images": [
++    {
++      "file": "morphology.svg",
++      "caption": "Original schematic — not to scale; not a microscopy image.",
++      "credit": "Parasitic Platform 2027",
++      "license": "CC0-1.0"
++    }
++  ],
++  "references": [
++    {
++      "title": "CDC DPDx — Taeniasis",
++      "url": "https://www.cdc.gov/dpdx/taeniasis/index.html"
++    }
++  ],
++  "reviewed_on": "2026-09-07",
++  "classification_label": "taenia spp",
++  "classifier_labels": []
++}
+--- a/pages/parasites/trichuris_trichiura/content.json
++++ b/pages/parasites/trichuris_trichiura/content.json
+@@ -43,5 +43,7 @@
+       "title": "CDC DPDx — Trichuriasis",
+       "url": "https://www.cdc.gov/dpdx/trichuriasis/index.html"
+     }
+-  ]
++  ],
++  "classification_label": "trichuris trichiura",
++  "classifier_labels": []
+ }
+--- /dev/null
++++ b/pages/parasites_quiz/ancylostoma_ceylanicum/quiz.json
+@@ -0,0 +1,37 @@
++{
++  "schema_version": 1,
++  "species_id": "ancylostoma_ceylanicum",
++  "questions": [
++    {
++      "id": "q1",
++      "question": "Which animals can host this parasite?",
++      "options": [
++        "Dogs and cats",
++        "Fish only",
++        "Snails only"
++      ],
++      "correct_answer": 0,
++      "explanation": "Dogs and cats can be hosts."
++    },
++    {
++      "id": "q2",
++      "question": "Which region is especially relevant?",
++      "options": [
++        "Antarctica",
++        "Southeast Asia"
++      ],
++      "correct_answer": 1,
++      "explanation": "This species is endemic across much of Southeast Asia."
++    },
++    {
++      "id": "q3",
++      "question": "What can routine egg morphology establish?",
++      "options": [
++        "Hookworm group",
++        "Definite species identity"
++      ],
++      "correct_answer": 0,
++      "explanation": "Egg morphology overlaps between hookworms."
++    }
++  ]
++}
+--- /dev/null
++++ b/pages/parasites_quiz/fasciolopsis_buski/quiz.json
+@@ -0,0 +1,39 @@
++{
++  "schema_version": 1,
++  "species_id": "fasciolopsis_buski",
++  "questions": [
++    {
++      "id": "q1",
++      "question": "Which exposure transmits infection?",
++      "options": [
++        "Aquatic plants with metacercariae",
++        "Mosquito bite",
++        "Undercooked beef"
++      ],
++      "correct_answer": 0,
++      "explanation": "Metacercariae encyst on aquatic plants."
++    },
++    {
++      "id": "q2",
++      "question": "Where do adults live?",
++      "options": [
++        "Bile ducts",
++        "Intestine",
++        "Blood cells"
++      ],
++      "correct_answer": 1,
++      "explanation": "F. buski is an intestinal fluke."
++    },
++    {
++      "id": "q3",
++      "question": "Which egg resembles F. buski?",
++      "options": [
++        "Taenia",
++        "Trichuris",
++        "Fasciola"
++      ],
++      "correct_answer": 2,
++      "explanation": "These large operculated eggs can be indistinguishable."
++    }
++  ]
++}
+--- /dev/null
++++ b/pages/parasites_quiz/necator_americanus/quiz.json
+@@ -0,0 +1,38 @@
++{
++  "schema_version": 1,
++  "species_id": "necator_americanus",
++  "questions": [
++    {
++      "id": "q1",
++      "question": "Which stage penetrates skin?",
++      "options": [
++        "Filariform larva",
++        "Egg",
++        "Cyst"
++      ],
++      "correct_answer": 0,
++      "explanation": "The filariform larva is infective."
++    },
++    {
++      "id": "q2",
++      "question": "Which complication follows blood loss?",
++      "options": [
++        "Cysticercosis",
++        "Anemia",
++        "Malaria"
++      ],
++      "correct_answer": 1,
++      "explanation": "Adult attachment can cause chronic blood loss."
++    },
++    {
++      "id": "q3",
++      "question": "Can eggs reliably identify the hookworm species?",
++      "options": [
++        "No",
++        "Yes"
++      ],
++      "correct_answer": 0,
++      "explanation": "Hookworm eggs overlap morphologically."
++    }
++  ]
++}
+--- /dev/null
++++ b/pages/parasites_quiz/strongyloides_stercoralis/quiz.json
+@@ -0,0 +1,39 @@
++{
++  "schema_version": 1,
++  "species_id": "strongyloides_stercoralis",
++  "questions": [
++    {
++      "id": "q1",
++      "question": "What is usually found in stool?",
++      "options": [
++        "Rhabditiform larvae",
++        "Operculated eggs",
++        "Proglottids"
++      ],
++      "correct_answer": 0,
++      "explanation": "Larvae are the usual stool diagnostic stage."
++    },
++    {
++      "id": "q2",
++      "question": "Which process permits prolonged persistence?",
++      "options": [
++        "Fish encystation",
++        "Autoinfection",
++        "Mosquito transmission"
++      ],
++      "correct_answer": 1,
++      "explanation": "Autoinfection can maintain infection."
++    },
++    {
++      "id": "q3",
++      "question": "Which context increases hyperinfection concern?",
++      "options": [
++        "Blood group O alone",
++        "Normal eyesight",
++        "Immunosuppression"
++      ],
++      "correct_answer": 2,
++      "explanation": "Immunosuppression can permit severe disease."
++    }
++  ]
++}
+--- /dev/null
++++ b/pages/parasites_quiz/taenia_spp/quiz.json
+@@ -0,0 +1,38 @@
++{
++  "schema_version": 1,
++  "species_id": "taenia_spp",
++  "questions": [
++    {
++      "id": "q1",
++      "question": "Which egg feature supports Taenia recognition?",
++      "options": [
++        "Radial striations",
++        "Polar plugs",
++        "Opercular shoulders"
++      ],
++      "correct_answer": 0,
++      "explanation": "The embryophore is radially striated."
++    },
++    {
++      "id": "q2",
++      "question": "What exposure can cause cysticercosis?",
++      "options": [
++        "Beef cysticerci",
++        "T. solium eggs",
++        "Fish metacercariae"
++      ],
++      "correct_answer": 1,
++      "explanation": "T. solium egg ingestion may produce tissue infection."
++    },
++    {
++      "id": "q3",
++      "question": "Can eggs distinguish T. saginata from T. solium?",
++      "options": [
++        "No",
++        "Yes"
++      ],
++      "correct_answer": 0,
++      "explanation": "Taenia eggs are morphologically indistinguishable."
++    }
++  ]
++}
+--- /dev/null
++++ b/requirements-rcnn.txt
+@@ -0,0 +1,4 @@
++-r requirements.txt
++# Keep a matched torch/torchvision release pair (CPU or CUDA build as appropriate).
++torch>=2.6,<3
++torchvision>=0.21,<1
+--- /dev/null
++++ b/scripts/expand_content.py
+@@ -0,0 +1,88 @@
++"""Add Thailand-focused learning entries without overwriting existing content."""
++import json
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++# Descriptions are concise teaching summaries; sources are recorded per entry.
++ENTRIES = [
++    ("necator_americanus", "Necator americanus", "Human hookworm", "Nematodes", "hookworm",
++     "A human intestinal hookworm; infective larvae penetrate skin.",
++     ["Thin-shelled eggs contain cleavage-stage cells.", "Eggs cannot reliably distinguish Necator from Ancylostoma."],
++     "Adult attachment can cause blood loss and iron deficiency anemia.",
++     [("Soil", "Eggs hatch and larvae mature."), ("Skin", "Infective larvae penetrate exposed skin."), ("Migration", "Larvae pass through lungs and are swallowed."), ("Intestine", "Adults attach and produce eggs.")],
++     [("Which stage penetrates skin?", ["Filariform larva", "Egg", "Cyst"], 0, "The filariform larva is infective."),
++      ("Which complication follows blood loss?", ["Anemia", "Cysticercosis", "Malaria"], 0, "Adult attachment can cause chronic blood loss."),
++      ("Can eggs reliably identify the hookworm species?", ["Yes", "No"], 1, "Hookworm eggs overlap morphologically.")]),
++    ("ancylostoma_ceylanicum", "Ancylostoma ceylanicum", "Zoonotic intestinal hookworm", "Nematodes", "hookworm",
++     "A zoonotic hookworm of particular relevance to Southeast Asia; humans, dogs and cats can be hosts.",
++     ["Routine egg morphology does not establish species identity."],
++     "Interpret hookworm eggs at group level unless species is confirmed by additional methods.",
++     [("Environment", "Eggs pass into soil."), ("Larvae", "Larvae develop to infectivity."), ("Exposure", "Skin penetration or ingestion can transmit larvae."), ("Intestine", "Adults establish and shed eggs.")],
++     [("Which animals can host this parasite?", ["Dogs and cats", "Fish only", "Snails only"], 0, "Dogs and cats can be hosts."),
++      ("Which region is especially relevant?", ["Southeast Asia", "Antarctica"], 0, "This species is endemic across much of Southeast Asia."),
++      ("What can routine egg morphology establish?", ["Hookworm group", "Definite species identity"], 0, "Egg morphology overlaps between hookworms.")]),
++    ("taenia_spp", "Taenia spp.", "T. saginata, T. solium and T. asiatica", "Cestodes", "taeniasis",
++     "A species-group entry for intestinal tapeworms. T. asiatica occurs in Thailand. Egg appearance does not resolve species.",
++     ["Round eggs have a radially striated embryophore and a six-hooked oncosphere.", "Use suitable proglottid, scolex or molecular findings to resolve species."],
++     "Taeniasis follows ingestion of cysticerci in meat. Ingestion of T. solium eggs can instead cause cysticercosis; these transmission routes must not be confused.",
++     [("Egg shedding", "Humans pass eggs or proglottids."), ("Animal host", "Cattle or pigs ingest eggs."), ("Larval stage", "Cysticerci develop in the intermediate host."), ("Human intestine", "Ingested cysticerci develop into adult tapeworms.")],
++     [("Which egg feature supports Taenia recognition?", ["Radial striations", "Polar plugs", "Opercular shoulders"], 0, "The embryophore is radially striated."),
++      ("What exposure can cause cysticercosis?", ["T. solium eggs", "Beef cysticerci", "Fish metacercariae"], 0, "T. solium egg ingestion may produce tissue infection."),
++      ("Can eggs distinguish T. saginata from T. solium?", ["Yes", "No"], 1, "Taenia eggs are morphologically indistinguishable.")]),
++    ("fasciolopsis_buski", "Fasciolopsis buski", "Giant intestinal fluke", "Trematodes", "fasciolopsiasis",
++     "An intestinal fluke transmitted by metacercariae on aquatic plants. Humans and pigs are definitive hosts.",
++     ["Large, broadly oval operculated eggs.", "Eggs measure about 130–150 × 60–90 µm and resemble Fasciola eggs."],
++     "Heavy infections may cause diarrhea, abdominal pain or obstruction. Egg microscopy alone cannot reliably separate Fasciolopsis from Fasciola.",
++     [("Water", "Eggs embryonate and release miracidia."), ("Snail", "Larval stages develop in a snail."), ("Plants", "Cercariae encyst on aquatic vegetation."), ("Intestine", "Ingested metacercariae mature into intestinal adults.")],
++     [("Which exposure transmits infection?", ["Aquatic plants with metacercariae", "Mosquito bite", "Undercooked beef"], 0, "Metacercariae encyst on aquatic plants."),
++      ("Where do adults live?", ["Intestine", "Bile ducts", "Blood cells"], 0, "F. buski is an intestinal fluke."),
++      ("Which egg resembles F. buski?", ["Fasciola", "Trichuris", "Taenia"], 0, "These large operculated eggs can be indistinguishable.")]),
++    ("strongyloides_stercoralis", "Strongyloides stercoralis", "Intestinal threadworm", "Nematodes", "strongyloidiasis",
++     "A soil-transmitted nematode capable of autoinfection and long-term persistence in a host.",
++     ["Rhabditiform larvae, rather than eggs, are usually detected in stool.", "A short buccal cavity and prominent genital primordium help distinguish rhabditiform larvae from hookworm larvae."],
++     "Immunosuppression can permit hyperinfection or dissemination. A negative routine stool examination does not exclude infection.",
++     [("Soil", "Larvae develop through direct or free-living pathways."), ("Skin", "Filariform larvae penetrate skin."), ("Intestine", "Parasitic females produce eggs that hatch."), ("Persistence", "Larvae leave in stool or participate in autoinfection.")],
++     [("What is usually found in stool?", ["Rhabditiform larvae", "Operculated eggs", "Proglottids"], 0, "Larvae are the usual stool diagnostic stage."),
++      ("Which process permits prolonged persistence?", ["Autoinfection", "Fish encystation", "Mosquito transmission"], 0, "Autoinfection can maintain infection."),
++      ("Which context increases hyperinfection concern?", ["Immunosuppression", "Normal eyesight", "Blood group O alone"], 0, "Immunosuppression can permit severe disease.")]),
++]
++
++ART = {
++    "hookworm": '<ellipse cx="250" cy="160" rx="110" ry="70" fill="#F2E5CC" stroke="#826A42" stroke-width="3"/>' + ''.join(f'<circle cx="{x}" cy="{y}" r="23" fill="#CEC09C" stroke="#958460" stroke-width="2"/>' for x,y in [(219,138),(269,138),(219,185),(269,185)]),
++    "taeniasis": '<circle cx="250" cy="160" r="85" fill="#E6CCAA" stroke="#876C4A" stroke-width="14" stroke-dasharray="3 4"/><circle cx="250" cy="160" r="65" fill="#EFE5D3" stroke="#876C4A" stroke-width="3"/>' + ''.join(f'<path d="M{x} 145 q-12 20 0 30" fill="none" stroke="#876C4A" stroke-width="3"/>' for x in [225,235,245,255,265,275]),
++    "fasciolopsiasis": '<ellipse cx="250" cy="160" rx="85" ry="108" fill="#EBD7B0" stroke="#897046" stroke-width="4"/><path d="M194 78 Q250 97 306 78" fill="none" stroke="#897046" stroke-width="3"/>' + ''.join(f'<circle cx="{x}" cy="{y}" r="9" fill="#BEA477"/>' for x,y in [(225,120),(268,135),(217,169),(259,181),(235,212)]),
++    "strongyloidiasis": '<path d="M135 190 C165 70 320 75 350 160 S250 275 215 223" fill="none" stroke="#9A9770" stroke-width="20" stroke-linecap="round"/><path d="M135 190 C165 70 320 75 350 160 S250 275 215 223" fill="none" stroke="#D6D8B8" stroke-width="13" stroke-linecap="round"/>',
++}
++
++def main():
++    for sid, name, common, group, source, description, morphology, clinical, steps, questions in ENTRIES:
++        folder = ROOT / "pages" / "parasites" / sid
++        folder.mkdir(parents=True, exist_ok=True)
++        quiz_folder = ROOT / "pages" / "parasites_quiz" / sid
++        quiz_folder.mkdir(parents=True, exist_ok=True)
++        entry = {"schema_version":1, "id":sid, "name":name, "common_name":common, "group":group, "description":description, "morphology":morphology, "clinical_significance":clinical,
++                 "life_cycle":[{"stage":stage,"detail":detail} for stage,detail in steps],
++                 "images":[{"file":"morphology.svg","caption":"Original schematic — not to scale; not a microscopy image.","credit":"Parasitic Platform 2027","license":"CC0-1.0"}],
++                 "references":[{"title":f"CDC DPDx — {source.capitalize()}","url":f"https://www.cdc.gov/dpdx/{source}/index.html"}], "reviewed_on":"2026-09-07"}
++        quiz = {"schema_version":1,"species_id":sid,"questions":[{"id":f"q{i}","question":q,"options":options,"correct_answer":answer,"explanation":explanation} for i,(q,options,answer,explanation) in enumerate(questions,1)]}
++        for i, q in enumerate(quiz["questions"]):
++            q["options"] = list(q["options"])
++            target, previous = i % len(q["options"]), q["correct_answer"]
++            q["options"][target], q["options"][previous] = q["options"][previous], q["options"][target]
++            q["correct_answer"] = target
++        if sid in {"necator_americanus", "ancylostoma_ceylanicum"}:
++            entry["references"].append({"title":"Molecular detection of hookworms in Thailand (2014)","url":"https://pmc.ncbi.nlm.nih.gov/articles/PMC3916468/"})
++        if sid == "fasciolopsis_buski":
++            entry["references"].append({"title":"Fasciolopsis buski in an endemic area in Thailand (2002)","url":"https://pubmed.ncbi.nlm.nih.gov/12466749/"})
++        svg = f'<svg xmlns="http://www.w3.org/2000/svg" width="500" height="350" viewBox="0 0 500 350" role="img" aria-label="{name} schematic"><rect width="500" height="350" rx="24" fill="#EFF3EA"/>{ART[source]}<text x="250" y="320" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#536B63">SCHEMATIC · NOT TO SCALE</text></svg>'
++        for path, text in [(folder/"content.json",json.dumps(entry,ensure_ascii=False,indent=2)), (quiz_folder/"quiz.json",json.dumps(quiz,ensure_ascii=False,indent=2)), (folder/"morphology.svg",svg)]:
++            if not path.exists():
++                path.write_text(text+"\n",encoding="utf-8")
++    for path in (ROOT/"pages"/"parasites").glob("*/content.json"):
++        entry=json.loads(path.read_text(encoding="utf-8"))
++        entry.setdefault("classification_label", entry["id"].replace("_", " "))
++        entry.setdefault("classifier_labels", ["opisthorchis viverrini egg"] if entry["id"] == "opisthorchis_viverrini" else [])
++        path.write_text(json.dumps(entry,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
++
++if __name__ == "__main__":
++    main()
+--- a/scripts/seed_content.py
++++ b/scripts/seed_content.py
+@@ -86,7 +86,7 @@
+         (folder / "morphology.svg").write_text(svg, encoding="utf-8")
+         quiz = {"schema_version": 1, "species_id": sid, "questions": [{"id": f"q{i}", "question": q, "options": opts, "correct_answer": answer, "explanation": explanation} for i,(q,opts,answer,explanation) in enumerate(questions,1)]}
+         (quiz_folder / "quiz.json").write_text(json.dumps(quiz, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+-    for path in (ROOT / "component_ai").glob("*.keras"):
++    for path in (ROOT / "component_ai" / "keras").glob("*.keras"):
+         contract = {"schema_version": 1, "labels": ["artifact", "opisthorchis viverrini egg", "minute intestinal fluke egg"], "preprocessing": "raw_0_255", "output": "sigmoid_scores", "provenance": "Class order and raw pixel preprocessing inherited from parasitic_platform_2026/pages/03_Parasitic_Vision.py; output activation inspected in saved model. Training provenance and external validation were not supplied."}
+         path.with_suffix(".json").write_text(json.dumps(contract, indent=2) + "\n", encoding="utf-8")
+ 
+--- a/tests/test_app.py
++++ b/tests/test_app.py
+@@ -55,9 +55,14 @@
+     at.segmented_control(key="detector_source").set_value("Upload image").run()
+     assert any("Choose an image" in x.value for x in at.info)
+     at.segmented_control(key="detector_source").set_value("Sample collection").run()
+-    at.segmented_control(key="detector_mode").set_value("YOLO · object detection").run()
++    assert not at.slider
++    at.selectbox(key="detector_family").set_value("YOLO detector").run()
+     assert not at.exception
+     assert next(b for b in at.button if b.label == "Detect objects").disabled
++    at.selectbox(key="detector_family").set_value("Faster R-CNN detector").run()
++    assert not at.exception
++    assert next(b for b in at.button if b.label == "Detect objects").disabled
++    assert any("rcnn/weights/parasite_fasterrcnn.pth" in item.value for item in at.info)
+ 
+ def test_detector_report_and_stale_crop_suppression(monkeypatch):
+     import component_layout.detector as detector
+@@ -69,18 +74,31 @@
+         result = {"model": paths[0].name, "prediction": postprocess_prediction(np.array([[0.2,0.7,0.1]]), ["artifact","OV egg","MIF egg"])}
+         return {"predictions":[result], "errors":[], "ensemble":build_ensemble_summary([result])}
+ 
+-    monkeypatch.setattr(detector, "classify", fake_classify)
++    calls = []
++    def counted_classify(image, paths):
++        calls.append(image.size)
++        return fake_classify(image, paths)
++    event = {"action":"calculate", "calc_token":"first", "zoom":1.0, "panX":0, "panY":0, "viewport":600}
++    def fake_viewer(image, image_id, state):
++        return {**event,"image_id":image_id}
++    monkeypatch.setattr(detector, "classify", counted_classify)
++    monkeypatch.setattr(detector, "render_image_viewer", fake_viewer)
+     at = app().switch_page("app_pages/detector.py").run()
+-    next(b for b in at.button if b.label == "Analyze selected region").click().run()
+     assert not at.exception
+     assert any("Highest ensemble score" in item.value for item in at.markdown)
+     report = at.session_state["detector_result"]["report"]
+     assert report["configuration"]["mode"] == "keras"
+     assert report["image_sha256"]
+     assert at.get("download_button")
+-    roi = next(widget for widget in at.slider if widget.label == "Horizontal bounds (pixels)")
+-    left, right = roi.value
+-    roi.set_range(left + 1, right).run()
++    assert any(item.value.startswith("Majority vote:") for item in at.subheader)
++    assert any(item.value == "Analysis results" for item in at.subheader)
++    assert len(calls) == 1
++    at.run()
++    assert len(calls) == 1  # A repeated component event must not run inference twice.
++    event.update(calc_token="second", zoom=2.0)
++    at.run()
++    assert len(calls) == 2 and calls[1][0] < calls[0][0]
++    at.multiselect(key="detector_models").set_value([]).run()
+     assert not at.exception
+     assert any("settings changed" in item.value for item in at.info)
+     assert not any("Highest ensemble score" in item.value for item in at.markdown)
+--- /dev/null
++++ b/tests/test_backends.py
+@@ -0,0 +1,109 @@
++import hashlib
++import json
++from pathlib import Path
++import numpy as np
++import pytest
++from PIL import Image
++from component_ai.models import discover_models, model_contract
++from component_ai.detection import AI_ROOT, detector_contract
++from component_ai.roi import compute_center_cell_crop_box
++from component_layout.viewer import selection_from_event
++
++def test_all_six_keras_weights_relocated_without_modification():
++    paths = discover_models()
++    assert len(paths) == 6
++    assert not list(AI_ROOT.glob("*.keras"))
++    original = AI_ROOT.parent.parent / "parasitic_platform_2026" / "pages_model"
++    for path in paths:
++        assert path.parent.name == "keras"
++        assert model_contract(path)["output"] == "sigmoid_scores"
++        if (original / path.name).exists():
++            assert hashlib.sha256(path.read_bytes()).digest() == hashlib.sha256((original/path.name).read_bytes()).digest()
++
++def test_drop_in_manifests_and_missing_weights():
++    for family in ("yolo", "rcnn"):
++        manifest, path = detector_contract(family)
++        assert path.parent == AI_ROOT / family / "weights"
++        assert manifest["architecture"]
++        assert (path.parent / "PLACE_WEIGHTS_HERE.txt").exists()
++
++def test_manifest_rejects_traversal_and_bad_background(tmp_path):
++    folder = tmp_path / "rcnn"
++    folder.mkdir()
++    manifest, _ = detector_contract("rcnn")
++    (folder/"model.json").write_text(json.dumps({**manifest,"weights":"../../evil.pth"}))
++    with pytest.raises(ValueError, match="inside"):
++        detector_contract("rcnn", tmp_path)
++    (folder/"model.json").write_text(json.dumps({**manifest,"labels":["egg","artifact"]}))
++    with pytest.raises(ValueError, match="background"):
++        detector_contract("rcnn", tmp_path)
++
++def test_viewer_matches_2026_mapping_and_validates_events():
++    image = Image.new("RGB", (1200,900))
++    event = {"action":"calculate","image_id":"abc","calc_token":"one","zoom":2,"panX":30,"panY":-20,"viewport":600}
++    box, _, token = selection_from_event(image,event,"abc")
++    assert box == compute_center_cell_crop_box(image,600,2,30,-20)
++    assert token == "one"
++    for changed in [{"image_id":"other"},{"zoom":float("nan")},{"panX":1e8},{"viewport":0},{"calc_token":""}]:
++        with pytest.raises(ValueError):
++            selection_from_event(image,{**event,**changed},"abc")
++
++def test_rcnn_preprocessing_filtering_nms_and_coordinates():
++    torch = pytest.importorskip("torch")
++    pytest.importorskip("torchvision")
++    from component_ai.rcnn import run_rcnn_inference
++    class Model:
++        def __call__(self, images):
++            assert images[0].shape == (3,20,30)
++            assert images[0].dtype == torch.float32
++            assert images[0][0,0,0] == 1 and images[0][1,0,0] == 0
++            assert not torch.is_grad_enabled()
++            return [{"boxes":torch.tensor([[1,2,15,16],[1,2,15,16],[0,0,10,10],[25,15,35,25]],dtype=torch.float32), "scores":torch.tensor([.9,.8,.1,.7]), "labels":torch.tensor([1,1,2,2])}]
++    result = run_rcnn_inference(Model(),Image.new("RGB",(30,20),(255,0,0)),["__background__","egg","artifact"],.25)
++    assert len(result["detections"]) == 2
++    assert result["detections"][1]["bbox_xyxy"] == [25,15,30,20]
++    assert result["class_counts"] == {"egg":1,"artifact":1}
++
++def test_rcnn_loader_uses_safe_checkpoint_no_pretrained_download(monkeypatch,tmp_path):
++    torch = pytest.importorskip("torch")
++    detection = pytest.importorskip("torchvision.models.detection")
++    from component_ai.rcnn import load_rcnn_model
++    manifest,_ = detector_contract("rcnn")
++    seen={}
++    class Model:
++        def load_state_dict(self,state,strict):
++            assert strict and state == {"sentinel":123}
++        def eval(self):
++            seen["eval"] = True
++    def build(**kwargs):
++        seen.update(kwargs)
++        return Model()
++    def load(path,**kwargs):
++        assert kwargs == {"weights_only":True,"map_location":"cpu"}
++        return {"model_state_dict":{"sentinel":123}}
++    monkeypatch.setattr(detection,"fasterrcnn_resnet50_fpn_v2",build)
++    monkeypatch.setattr(torch,"load",load)
++    path=tmp_path/"model.pth"
++    path.write_bytes(b"loader contract fixture; not real weights")
++    load_rcnn_model.clear()
++    model,lock,digest=load_rcnn_model(str(path),(1,1),json.dumps(manifest))
++    assert seen["weights"] is None and seen["weights_backbone"] is None
++    assert seen["num_classes"] == len(manifest["labels"])
++    assert seen["eval"] and len(digest)==64
++    load_rcnn_model.clear()
++
++def test_button_hues_are_distinct_and_readable():
++    import re,colorsys
++    css=(AI_ROOT.parent/"component_theme/styles.css").read_text()
++    colors=re.findall(r"--button-[a-z]+:(#[A-F0-9]{6})",css)
++    assert len(colors)==6 and len(set(colors))==6
++    hues=[]
++    def luminance(rgb):
++        linear=[v/12.92 if v<=.04045 else ((v+.055)/1.055)**2.4 for v in rgb]
++        return sum(v*w for v,w in zip(linear,[.2126,.7152,.0722]))
++    ink=[int("203C36"[i:i+2],16)/255 for i in [0,2,4]]
++    for color in colors:
++        rgb=[int(color[i:i+2],16)/255 for i in [1,3,5]]
++        hues.append(round(colorsys.rgb_to_hls(*rgb)[0]*360))
++        assert (luminance(rgb)+.05)/(luminance(ink)+.05)>=4.5
++    assert len(set(hues))==6
+--- a/tests/test_content.py
++++ b/tests/test_content.py
+@@ -4,8 +4,12 @@
+ 
+ def test_bundled_species_and_quizzes_are_consistent():
+     entries = atlas_entries()
+-    assert len(entries) >= 4
++    assert len(entries) >= 9
++    assert {"necator_americanus", "ancylostoma_ceylanicum", "taenia_spp", "fasciolopsis_buski", "strongyloides_stercoralis"}.issubset({e["id"] for e in entries})
+     for entry in entries:
++        assert entry["classification_label"]
++        if entry["id"] != "opisthorchis_viverrini":
++            assert entry["classifier_labels"] == []
+         for image in entry["images"]:
+             assert local_asset(entry["folder"], image["file"]).exists()
+         questions = quiz_questions(entry["id"])
+--- /dev/null
++++ b/tests/viewer_contract.cjs
+@@ -0,0 +1,54 @@
++// Node-only contract test for the reused iframe, with a minimal DOM/canvas stub.
++// This checks event behavior; it is not a rendered-browser visual test.
++const assert = require('node:assert/strict');
++const fs = require('node:fs');
++const path = require('node:path');
++const vm = require('node:vm');
++const html = fs.readFileSync(path.join(__dirname,'../component_layout/viewer_component/index.html'),'utf8');
++const code = html.match(/<script>([\s\S]*?)<\/script>/)[1];
++const messages = [], elements = {}, windowEvents = {};
++const drawContext = new Proxy({}, {get:(obj,key)=>obj[key] || (()=>{}),set:(obj,key,value)=>(obj[key]=value,true)});
++function element(id) {
++  return elements[id] ||= {style:{},events:{},textContent:'',width:0,height:0,
++    addEventListener(type,fn){this.events[type]=fn},
++    getContext(){return drawContext},getBoundingClientRect(){return {left:0,top:0}},
++    focus(){document.activeElement=this},setPointerCapture(){}};
++}
++const document = {documentElement:{clientWidth:640,dataset:{}},activeElement:null,
++  getElementById:element,querySelector:element};
++const parent = {postMessage(msg){messages.push(msg)}};
++const window = {parent,innerWidth:640,addEventListener(type,fn){windowEvents[type]=fn},clearTimeout(){},setTimeout(fn){fn()}};
++class Image {constructor(){this.complete=true;this.naturalWidth=1200;this.naturalHeight=900;}}
++vm.runInNewContext(code,{document,window,Image,console,Math,Date,Number,String,
++  getComputedStyle(){return {getPropertyValue(){return ''}}}, requestAnimationFrame(){}});
++assert.equal(messages[0].type,'streamlit:componentReady');
++const render = {source:parent,data:{type:'streamlit:render',args:{viewport:0,init_zoom:1,init_panX:0,init_panY:0,image_b64:'test',image_id:'sample-1',theme_mode:'Light'}}};
++windowEvents.message(render);
++assert.equal(elements.cv.width,636);
++assert.equal(document.documentElement.dataset.theme,'light');
++const values=()=>messages.filter(m=>m.type==='streamlit:setComponentValue');
++elements.zoomInBtn.events.click();
++elements.cv.events.pointerdown({clientX:100,clientY:100,pointerId:1});
++elements.cv.events.pointermove({clientX:120,clientY:110});
++elements.cv.events.pointerup();
++assert.equal(values().length,0,'Pan and zoom must not trigger Python inference');
++assert.match(elements.selectionStatus.textContent,/Selection changed/);
++elements.calcBtn.events.click();
++let result=values().at(-1).value;
++assert.equal(result.action,'calculate');
++assert.equal(result.image_id,'sample-1');
++assert.equal(result.zoom,1.1);
++assert.equal(result.panX,20);
++assert.equal(result.panY,10);
++assert.equal(result.viewport,636);
++assert.ok(result.calc_token);
++elements.cv.events.wheel({preventDefault(){},clientX:318,clientY:318,deltaY:-1});
++assert.equal(values().length,1);
++elements.calcBtn.events.click();
++result=values().at(-1).value;
++assert.ok(result.zoom>1.1);
++assert.notEqual(values()[0].value.calc_token,result.calc_token);
++windowEvents.message({source:{},data:{type:'streamlit:render',args:{image_id:'foreign'}}});
++elements.calcBtn.events.click();
++assert.equal(values().at(-1).value.image_id,'sample-1','Ignore messages from non-parent windows');
++console.log('Viewer contract passed: initialize, resize, drag, zoom, Calculate, source binding, no pan/zoom reruns.');
+--- a/.gitignore
++++ b/.gitignore
+@@ -4,3 +4,4 @@
+ .ruff_cache/
+ .streamlit/secrets.toml
+ *.log
++.qa/
+--- a/.dockerignore
++++ b/.dockerignore
+@@ -6,3 +6,4 @@
+ .streamlit/secrets.toml
+ tests
+ *.log
++.qa
