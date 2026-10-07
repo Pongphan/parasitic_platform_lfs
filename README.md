@@ -1,5 +1,7 @@
 # Parasitic Platform 2027
 
+GitHub repository: `parasitic_platform_lfs`.
+
 All **50 Atlas entries** now include a local schematic in **Morphology & images**:
 41 new stage-specific SVG diagrams complement the nine existing illustrations.
 New diagrams include feature labels and identification limits; reference microscopy
