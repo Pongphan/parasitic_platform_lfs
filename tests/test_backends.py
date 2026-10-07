@@ -1,3 +1,4 @@
+import builtins
 import hashlib
 import json
 from pathlib import Path
@@ -19,6 +20,59 @@ def test_auto_model_choices_resolve_distinct_checkpoints():
             assert contract["weights"] == f"weights/{name}.pt"
     with pytest.raises(ValueError, match="Unknown"):
         auto_detector_contract("../../outside")
+
+
+@pytest.mark.parametrize("import_error,missing_ultralytics", [
+    pytest.param(ModuleNotFoundError("No module named 'ultralytics'", name="ultralytics"), True,
+                 id="missing-ultralytics"),
+    pytest.param(ModuleNotFoundError("No module named 'cv2'", name="cv2"), False,
+                 id="missing-opencv"),
+    pytest.param(ModuleNotFoundError("No module named 'ultralytics.utils'", name="ultralytics.utils"), False,
+                 id="missing-ultralytics-submodule"),
+    pytest.param(ImportError("libGL.so.1: cannot open shared object file"), False,
+                 id="missing-libgl"),
+    pytest.param(OSError("libgomp.so.1: cannot open shared object file"), False,
+                 id="missing-libgomp"),
+    pytest.param(RuntimeError("operator torchvision::nms does not exist"), False,
+                 id="incompatible-torchvision"),
+])
+def test_yolo_import_failures_preserve_cause_and_log_traceback(
+    monkeypatch, tmp_path, caplog, import_error, missing_ultralytics
+):
+    from component_ai.yolo import load_yolo_model
+    checkpoint = tmp_path / "model.pt"
+    checkpoint.write_bytes(b"import failure fixture; not real weights")
+    original_import = builtins.__import__
+
+    def fail_ultralytics_import(name, *args, **kwargs):
+        if name == "ultralytics":
+            raise import_error
+        return original_import(name, *args, **kwargs)
+
+    load_yolo_model.clear()
+    monkeypatch.setattr(builtins, "__import__", fail_ultralytics_import)
+    try:
+        with caplog.at_level("ERROR", logger="component_ai.yolo.service"):
+            with pytest.raises(RuntimeError) as failure:
+                load_yolo_model(str(checkpoint), (1, 1))
+        assert failure.value.__cause__ is import_error
+        if missing_ultralytics:
+            assert "Ultralytics is required" in str(failure.value)
+            assert "pip install -r requirements-yolo.txt" in str(failure.value)
+        else:
+            assert "dependencies could not be loaded" in str(failure.value)
+            assert "server logs" in str(failure.value)
+            assert "Ultralytics is required" not in str(failure.value)
+            assert "pip install" not in str(failure.value)
+        records = [record for record in caplog.records
+                   if record.name == "component_ai.yolo.service" and record.exc_info]
+        assert len(records) == 1
+        assert records[0].exc_info[1] is import_error
+        assert records[0].exc_info[2] is not None
+    finally:
+        load_yolo_model.clear()
+
+
 from component_ai.roi import compute_center_cell_crop_box
 from component_layout.viewer import selection_from_event
 

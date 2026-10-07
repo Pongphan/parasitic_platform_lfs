@@ -7,6 +7,7 @@ inference, result normalization, and annotation rendering.
 
 from collections import Counter
 import hashlib
+import logging
 import threading
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -16,6 +17,8 @@ import streamlit as st
 from PIL import Image
 from component_ai.annotations import annotate_detections
 from component_ai.settings import DEFAULT_CONFIDENCE, canonical_label
+
+_LOGGER = logging.getLogger(__name__)
 
 
 DEFAULT_CLASS_NAMES = (
@@ -48,10 +51,18 @@ def load_yolo_model(weights_path: str, version: tuple) -> Any:
 
     try:
         from ultralytics import YOLO
-    except ImportError as exc:
+    except (ImportError, OSError, RuntimeError) as exc:
+        # The page handles this error, so log the original traceback here for
+        # Cloud diagnostics (e.g. OpenCV cannot load a Linux shared library).
+        _LOGGER.exception("Failed to import Ultralytics for Auto Detection")
+        if isinstance(exc, ModuleNotFoundError) and exc.name == "ultralytics":
+            raise RuntimeError(
+                "Ultralytics is required for Auto Detection. Install the project "
+                "requirements with `pip install -r requirements-yolo.txt`."
+            ) from exc
         raise RuntimeError(
-            "Ultralytics is required for Auto Detection. Install the project "
-            "requirements with `pip install -r requirements-yolo.txt`."
+            "Auto Detection dependencies could not be loaded. "
+            "The app administrator can check the server logs for details."
         ) from exc
 
     return YOLO(str(path)), threading.RLock(), hashlib.sha256(path.read_bytes()).hexdigest()
